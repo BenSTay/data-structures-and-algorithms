@@ -2,14 +2,17 @@
 **Author**: Benjamin Taylor
 
 ## Description
-A C# implementation of a singly-linked list. A singly linked list is comprised of data objects called "nodes" that contain a value and a pointer to the next node in the list. The list object itself only contains a reference to the first node in the list, and the methods required to traverse the list. The methods of this linked list are *Insert*, *Includes*, and *Print*.
+A C# implementation of a singly-linked list. A singly linked list is comprised of data objects called "nodes" that contain a value and a pointer to the next node in the list. The list object itself only contains a reference to the first node in the list, and the methods required to traverse the list. The methods of this linked list are *Insert*, *Includes*, *Print*, *Append*, *InsertBefore*, and *InsertAfter*.
 
 ## Methods
 | Method | Summary | Big O Time | Big O Space | Example |
-| :----- | :------ | :--------: | :---------: | :------ |
+| :----: | :-----: | :--------: | :---------: | :-----: |
 | Insert | Adds a node to the front of the linked list | O(1) | O(1) | list.Insert(256) |
 | Includes | Checks if the list includes a given value and returns a boolean depending on the result | O(n) | O(1) | list.includes(127) |
 | Print | Formats the linked list as a string | O(n) | O(1) | list.Print() |
+| Append | Adds a node to the back of the linked list | O(n) | O(1) | list.Append(42) |
+| InsertBefore | Adds a node to the list before the first node in the list that has a value that matches the given target value | O(n) | O(1) | list.InsertBefore(256, 255) |
+| InsertAfter | Adds a node to the list after the first node in the list that has a value that matches the given target value | O(n) | O(1) | list.InsertAfter(256, 257) |
 
 ## Visuals
 
@@ -24,3 +27,15 @@ A C# implementation of a singly-linked list. A singly linked list is comprised o
 ### Print Method
 **Formats the linked list as a string.**
 ![Print](../../assets/linkedlistprint.webp)
+
+### Append Method
+**Adds a node to the back of the linked list**
+![Append](../../assets/linkedlistappend.webp)
+
+### InsertBefore Method
+**Adds a node to the list before the first node in the list that has a value that matches the given target value**
+![InsertBefore](../../assets/linkedlistinsertbefore.webp)
+
+### InsertAfter Method
+**Adds a node to the list before the first node in the list that has a value that matches the given target value**
+![InsertAfter](../../assets/linkedlistinsertafter.webp)
