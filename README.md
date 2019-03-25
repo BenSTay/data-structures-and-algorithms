@@ -5,4 +5,4 @@ Repository for C# Data Structure & Algorithm implementations.
 1. [Binary Search](./challenges/binary-search)
 
 ## Completed Data Structure Implementations
-None yet ;)
+1. [Linked List](./data-structures/linked-list)
