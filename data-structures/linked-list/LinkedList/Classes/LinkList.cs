@@ -15,8 +15,7 @@ namespace LinkedList.Classes
         /// <param name="value">The node's value.</param>
         public void Insert(int value)
         {
-            Node newNode = new Node(value);
-            newNode.Next = Head;
+            Node newNode = new Node(value) { Next = Head };
             Head = newNode;
         }
 
@@ -51,6 +50,72 @@ namespace LinkedList.Classes
                 Current = Current.Next;
             }
             return builder.ToString();
+        }
+
+        /// <summary>
+        /// Adds a new node at the end of the list.
+        /// </summary>
+        /// <param name="value">The value of the node being added.</param>
+        public void Append(int value)
+        {
+            Node newnode = new Node(value);
+            if (Head is null) Head = newnode;
+            else
+            {
+                Current = Head;
+                while (Current.Next != null)
+                {
+                    Current = Current.Next;
+                }
+                Current.Next = newnode;
+            }
+        }
+
+        /// <summary>
+        /// Adds a new node before a node in the list with a given target value.
+        /// </summary>
+        /// <param name="target">The value of the node that the new node will be placed before.</param>
+        /// <param name="value">The value of the node being added.</param>
+        public void InsertBefore(int target, int value)
+        {
+            if (Head != null)
+            {
+                if (target == Head.Value) Insert(value);
+                else
+                {
+                    Current = Head;
+                    while (Current.Next != null)
+                    {
+                        if (Current.Next.Value == target)
+                        {
+                            Node newnode = new Node(value) { Next = Current.Next };
+                            Current.Next = newnode;
+                            break;
+                        }
+                        Current = Current.Next;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Adds a new node after a node in the list with a given target value.
+        /// </summary>
+        /// <param name="target">The value of the node that the new node will be placed after.</param>
+        /// <param name="value">The value of the node being added.</param>
+        public void InsertAfter(int target, int value)
+        {
+            Current = Head;
+            while (Current != null)
+            {
+                if (Current.Value == target)
+                {
+                    Node newnode = new Node(value) { Next = Current.Next };
+                    Current.Next = newnode;
+                    break;
+                }
+                Current = Current.Next;
+            }
         }
     }
 }
