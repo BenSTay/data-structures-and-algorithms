@@ -132,5 +132,60 @@ namespace LinkedListTests
             list.InsertAfter(5, 100);
             Assert.Equal("1 -> 2 -> 3 -> 4 -> 5 -> 100", list.Print());
         }
+
+        [Fact]
+        public void KGreaterThanListLengthThrowsException()
+        {
+            LinkList list = new LinkList();
+            for (int i = 1; i <= 5; i++)
+            {
+                list.Append(i);
+            }
+            Assert.Throws<ArgumentOutOfRangeException>(() => list.KthFromEnd(6));
+        }
+
+        [Fact]
+        public void KEqualsListLengthGetsHeadsValue()
+        {
+            LinkList list = new LinkList();
+            for (int i = 1; i <= 5; i++)
+            {
+                list.Append(i);
+            }
+            int result = list.KthFromEnd(4);
+            Assert.Equal(list.Head.Value, result);
+        }
+
+        [Fact]
+        public void KIsNegativeThrowsException()
+        {
+            LinkList list = new LinkList();
+            for (int i = 1; i <= 5; i++)
+            {
+                list.Append(i);
+            }
+            Assert.Throws<ArgumentOutOfRangeException>(() => list.KthFromEnd(-1));
+        }
+
+        [Fact]
+        public void KthFromEndWorksOnListWithSingleNode()
+        {
+            LinkList list = new LinkList();
+            list.Insert(100);
+            int result = list.KthFromEnd(0);
+            Assert.Equal(list.Head.Value, result);
+        }
+
+        [Fact]
+        public void KthFromElementHappyPath()
+        {
+            LinkList list = new LinkList();
+            for (int i = 1; i <= 5; i++)
+            {
+                list.Append(i);
+            }
+            int result = list.KthFromEnd(2);
+            Assert.Equal(3, result);
+        }
     }
 }

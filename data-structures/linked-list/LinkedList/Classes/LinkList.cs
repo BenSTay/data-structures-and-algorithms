@@ -117,5 +117,33 @@ namespace LinkedList.Classes
                 Current = Current.Next;
             }
         }
+
+        /// <summary>
+        /// Gets the value of the node that is k nodes away from the end of the list.
+        /// </summary>
+        /// <param name="k">The distance from the end of the list.</param>
+        /// <returns>The value of the node.</returns>
+        public int KthFromEnd(int k)
+        {
+            if (k < 0) throw new ArgumentOutOfRangeException("k cannot be negative");
+            int counter = 0;
+            Current = Head;
+
+            while (Current.Next != null)
+            {
+                counter++;
+                Current = Current.Next;
+            }
+
+            if (k > counter) throw new ArgumentOutOfRangeException("k cannot be greater than the lists length");
+            Current = Head;
+
+            while (k < counter)
+            {
+                counter--;
+                Current = Current.Next;
+            }
+            return Current.Value;
+        }
     }
 }
