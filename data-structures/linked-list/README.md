@@ -19,28 +19,29 @@ A C# implementation of a singly-linked list. A singly linked list is comprised o
 
 ### Insert Method
 **Creates a new node with a given value, assigns the current Head of the linked list as its Next, and then re-assigns the Head of the list to be the new node.**
-![Insert](../../assets/linkedlistinsert.webp)
+![Insert](../../assets/linked-list/linkedlistinsert.webp)
 
 ### Includes Method
 **Iterates through the list, comparing a given value to each nodes value until the values match or the end of the list is reached. If the value is found, the method returns true. If the value is not found, the method returns false.**
-![Includes](../../assets/linkedlistincludes.webp)
+![Includes](../../assets/linked-list/linkedlistincludes.webp)
 
 ### Print Method
 **Formats the linked list as a string.**
-![Print](../../assets/linkedlistprint.webp)
+![Print](../../assets/linked-list/linkedlistprint.webp)
 
 ### Append Method
 **Adds a node to the back of the linked list**
-![Append](../../assets/linkedlistappend.webp)
+![Append](../../assets/linked-list/linkedlistappend.webp)
 
 ### InsertBefore Method
 **Adds a node to the list before the first node in the list that has a value that matches the given target value**
-![InsertBefore](../../assets/linkedlistinsertbefore.webp)
+![InsertBefore](../../assets/linked-list/linkedlistinsertbefore.webp)
 
 ### InsertAfter Method
 **Adds a node to the list before the first node in the list that has a value that matches the given target value**
-![InsertAfter](../../assets/linkedlistinsertafter.webp)
+![InsertAfter](../../assets/linked-list/linkedlistinsertafter.webp)
+
 
 ### KthFromEnd Method
 **Gets the value of the node that is k nodes away from the end of the list**
-![KthFromEnd](../../assets/linkedlistkthfromend.webp)
+![KthFromEnd](../../assets/linked-list/linkedlistkthfromend.webp)
