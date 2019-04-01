@@ -24,7 +24,6 @@ First, a new node is created. Then, this new nodes next is set to the top node. 
 First, a temporary node is created and set to the top node. Next, The top node is set to the top nodes next. Finally, the value of the temporary node is returned.
 
 ### Peek
-![Stack Peek](../../assets/stack-and-queue/stackpeek.webp)
 Returns the top nodes value.
 
 ## Queue Methods
@@ -44,5 +43,4 @@ First, a new node is created. Then, the rear node's next is set to the new node.
 First, a temporary node is created and set to the front node. Next, the front node is set to the front nodes next. Finally, the temporary nodes value is returned.
 
 ### Peek
-![Queue Peek](../../assets/stack-and-queue/queuepeek.webp)
 Returns the front nodes value.
