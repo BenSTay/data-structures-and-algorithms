@@ -16,11 +16,11 @@ A queue operates on a first in, first out basis. When a node is added, it is pla
 
 ## Stack Visuals
 ### Push
-![Stack Push](../../assets/stack-and-queue/stackpush.webp)
+![Stack Push](../../assets/stack-and-queue/stackpush.webp)  
 First, a new node is created. Then, this new nodes next is set to the top node. Finally, the top node is set to the new node.
 
 ### Pop
-![Stack Pop](../../assets/stack-and-queue/stackpop.webp)
+![Stack Pop](../../assets/stack-and-queue/stackpop.webp)  
 First, a temporary node is created and set to the top node. Next, The top node is set to the top nodes next. Finally, the value of the temporary node is returned.
 
 ### Peek
@@ -35,11 +35,11 @@ Returns the top nodes value.
 
 ## Queue Visuals
 ### Enqueue
-![Queue Enqueue](../../assets/stack-and-queue/queueenqueue.webp)
+![Queue Enqueue](../../assets/stack-and-queue/queueenqueue.webp)  
 First, a new node is created. Then, the rear node's next is set to the new node. Finally, the rear is set to the new node.
 
 ### Dequeue
-![Queue Dequeue](../../assets/stack-and-queue/queuedequeue.webp)
+![Queue Dequeue](../../assets/stack-and-queue/queuedequeue.webp)  
 First, a temporary node is created and set to the front node. Next, the front node is set to the front nodes next. Finally, the temporary nodes value is returned.
 
 ### Peek
