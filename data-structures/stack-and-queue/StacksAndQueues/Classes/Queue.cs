@@ -40,7 +40,7 @@ namespace StacksAndQueues.Classes
         /// <summary>
         /// Retrieves the value of the node at the front of the queue.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The front nodes value.</returns>
         public T Peek()
         {
             if (Front is null) throw new InvalidOperationException("Cannot peek on an empty queue!");
