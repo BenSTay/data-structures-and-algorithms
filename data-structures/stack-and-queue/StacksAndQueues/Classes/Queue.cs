@@ -31,6 +31,7 @@ namespace StacksAndQueues.Classes
             else
             {
                 Node<T> node = Front;
+                if (Front == Rear) Rear = Rear.Next;
                 Front = Front.Next;
                 return node.Value;
             }
