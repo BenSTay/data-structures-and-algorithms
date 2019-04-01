@@ -25,7 +25,7 @@ namespace StacksAndQueues.Classes
         /// <returns>The removed nodes value.</returns>
         public T Pop()
         {
-            if (Top is null) throw new InvalidOperationException("Cannot pop on an empty stack!");
+            if (Top is null) throw new InvalidOperationException("Cannot pop from an empty stack!");
             else
             {
                 Node<T> node = Top;
@@ -35,7 +35,7 @@ namespace StacksAndQueues.Classes
         }
 
         /// <summary>
-        /// Finds the value of the node at the top of the stack.
+        /// Retrieves the value of the node at the top of the stack.
         /// </summary>
         /// <returns>The top nodes value.</returns>
         public T Peek()
