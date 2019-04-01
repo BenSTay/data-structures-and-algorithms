@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.28307.539
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StacksAndQueues", "StacksAndQueues\StacksAndQueues.csproj", "{B3FDB8BC-870B-4ACB-80B4-1A392401289F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StacksAndQueuesTests", "..\StacksAndQueuesTests\StacksAndQueuesTests.csproj", "{3A3BF1E6-9642-4454-9E6C-1657E4B1FBC0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StacksAndQueuesTests", "StacksAndQueuesTests\StacksAndQueuesTests.csproj", "{3A3BF1E6-9642-4454-9E6C-1657E4B1FBC0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
