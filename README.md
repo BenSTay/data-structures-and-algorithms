@@ -6,6 +6,7 @@ Repository for C# Data Structure & Algorithm implementations.
 2. [Linked List Merge](./challenges/ll-merge)
 3. [Queue With Stacks](./challenges/queue-with-stacks)
 4. [FIFO Animal Shelter](./challenges/fifo-animal-shelter)
+5. [Multi Bracket Validation](./challenges/multi-bracket-validation)
 
 ## Completed Data Structure Implementations
 1. [Linked List](./data-structures/linked-list)
