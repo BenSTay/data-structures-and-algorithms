@@ -138,6 +138,10 @@ namespace BinaryTrees.Classes
             }
         }
 
+        /// <summary>
+        /// Finds the maximum node value in the tree.
+        /// </summary>
+        /// <returns>The maximum value.</returns>
         public virtual T GetMaxValue()
         {
             if (Root is null) throw new InvalidOperationException("Cannot get maximum value of an empty tree");

@@ -74,6 +74,10 @@ namespace BinaryTrees.Classes
             }
         }
 
+        /// <summary>
+        /// Gets the value of the right-most node in the binary search tree.
+        /// </summary>
+        /// <returns>The value of the right-most node.</returns>
         public override T GetMaxValue()
         {
             if (Root is null) throw new InvalidOperationException("Cannot get maximum value of an empty tree");
