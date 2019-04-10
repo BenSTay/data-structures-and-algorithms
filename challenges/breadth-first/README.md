@@ -12,9 +12,8 @@ Once the traversal has been completed, the list is returned.
 ### Big O
 - **Time**: O(n)
   - This algorithm accesses each node once, therefore the time it takes to complete scales linearly with the number of nodes in the tree.
-- **Space**: O(w)
-  - This algorithm stores nodes in a queue, and the maximum amount of nodes stored in this queue at any given time is equal to the number of nodes in the widest layer of the tree.
-Therefore, the space complexity of this algorithm is O(w), where "w" stands for the width of the tree.
+- **Space**: O(n)
+  - This algorithm stores all of the tree's nodes in a list, and therefore the space taken by this list scales linearly with the number of nodes in the tree.
 
 ## Solution
 ![Whiteboard](../../assets/breadthfirst.webp)
