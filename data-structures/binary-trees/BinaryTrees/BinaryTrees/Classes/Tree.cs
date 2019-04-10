@@ -137,5 +137,30 @@ namespace BinaryTrees.Classes
                 return result;
             }
         }
+
+        public virtual T GetMaxValue()
+        {
+            if (Root is null) throw new InvalidOperationException("Cannot get maximum value of an empty tree");
+            if (Root.Value is IComparable)
+            {
+                T max = Root.Value;
+                Queue<Node<T>> breadth = new Queue<Node<T>>();
+                breadth.Enqueue(Root);
+
+                while (breadth.TryDequeue(out Node<T> node))
+                {
+                    if (Comparer<T>.Default.Compare(max, node.Value) < 0)
+                    {
+                        max = node.Value;
+                    }
+
+                    if (node.Left != null) breadth.Enqueue(node.Left);
+                    if (node.Right != null) breadth.Enqueue(node.Right);
+                }
+
+                return max;
+            }
+            else throw new InvalidOperationException("Cannot find maximum value of non-comparable data type");
+        }
     }
 }

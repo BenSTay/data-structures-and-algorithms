@@ -157,5 +157,57 @@ namespace TreeTests
             }
             Assert.True(tree.Contains(3));
         }
+
+        [Fact]
+        public void CanGetMaxValue()
+        {
+            Tree<int> tree = new BinaryTree<int>(10);
+            List<int> values = new List<int>()
+            {
+                -5, 12, 0, 19, 3, 17
+            };
+
+            foreach(int value in values)
+            {
+                tree.Add(value);
+            }
+
+            int result = tree.GetMaxValue();
+
+            Assert.Equal(19, result);
+        }
+
+        [Fact]
+        public void CanGetBinarySearchTreeMaxValue()
+        {
+            Tree<int> tree = new BinarySearchTree<int>(10);
+            List<int> values = new List<int>()
+            {
+                -5, 12, 0, 19, 3, 17
+            };
+
+            foreach (int value in values)
+            {
+                tree.Add(value);
+            }
+
+            int result = tree.GetMaxValue();
+
+            Assert.Equal(19, result);
+        }
+
+        [Fact]
+        public void CantGetMaxValueOfEmptyTree()
+        {
+            Tree<int> tree = new BinaryTree<int>();
+            Assert.Throws<InvalidOperationException>(() => tree.GetMaxValue());
+        }
+
+        [Fact]
+        public void CantGetMaxValueOfNonComparableType()
+        {
+            Tree<Tree<int>> treetree = new BinaryTree<Tree<int>>(new BinarySearchTree<int>());
+            Assert.Throws<InvalidOperationException>(() => treetree.GetMaxValue());
+        }
     }
 }
