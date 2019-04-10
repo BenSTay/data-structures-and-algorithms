@@ -6,7 +6,7 @@ namespace BinaryTrees.Classes
 {
     public abstract class Tree<T>
     {
-        protected Node<T> Root { get; set; }
+        public Node<T> Root { get; set; }
 
         public abstract void Add(T value);
 

@@ -98,6 +98,37 @@ namespace TreeTests
         }
 
         [Fact]
+        public void BreadthFirstOnEmptyTreeReturnsNull()
+        {
+            Tree<int> tree = new BinarySearchTree<int>();
+            Assert.Null(tree.BreadthFirst());
+        }
+
+        [Fact]
+        public void BreadthFirstWorksOnTreeWithNoBranches()
+        {
+            Tree<int> tree = new BinaryTree<int>(0);
+            Node<int> node = tree.Root;
+            List<int> expected = new List<int>() { 0 };
+            Random rng = new Random();
+            for (int i = 1; i < 10; i++)
+            {
+                expected.Add(i);
+                if (rng.Next(2) == 0)
+                {
+                    node.Left = new Node<int>(i);
+                    node = node.Left;
+                }
+                else
+                {
+                    node.Right = new Node<int>(i);
+                    node = node.Right;
+                }
+            }
+            Assert.Equal(expected, tree.BreadthFirst());
+        }
+
+        [Fact]
         public void BinarySearchTreeSortsProperly()
         {
             BinarySearchTree<int> tree = new BinarySearchTree<int>();
