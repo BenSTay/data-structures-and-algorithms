@@ -8,6 +8,7 @@ Repository for C# Data Structure & Algorithm implementations.
 4. [FIFO Animal Shelter](./challenges/fifo-animal-shelter)
 5. [Multi Bracket Validation](./challenges/multi-bracket-validation)
 6. [FizzBuzz Tree](./challenges/fizzbuzz-tree)
+7. [Breadth First Tree Traversal](./challenges/breadth-first)
 
 ## Completed Data Structure Implementations
 1. [Linked List](./data-structures/linked-list)
