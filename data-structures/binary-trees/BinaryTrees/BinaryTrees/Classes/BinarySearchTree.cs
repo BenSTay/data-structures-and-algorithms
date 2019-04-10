@@ -73,5 +73,19 @@ namespace BinaryTrees.Classes
                 else return Contains(node.Right, value);
             }
         }
+
+        public override T GetMaxValue()
+        {
+            if (Root is null) throw new InvalidOperationException("Cannot get maximum value of an empty tree");
+            else
+            {
+                Node<T> node = Root;
+                while (node.Right != null)
+                {
+                    node = node.Right;
+                }
+                return node.Value;
+            }
+        }
     }
 }

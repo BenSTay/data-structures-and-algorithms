@@ -9,6 +9,7 @@ Repository for C# Data Structure & Algorithm implementations.
 5. [Multi Bracket Validation](./challenges/multi-bracket-validation)
 6. [FizzBuzz Tree](./challenges/fizzbuzz-tree)
 7. [Breadth First Tree Traversal](./challenges/breadth-first)
+8. [Find Maximum Value in a Binary Tree](./challenges/find-maximum-binary-tree)
 
 ## Completed Data Structure Implementations
 1. [Linked List](./data-structures/linked-list)
