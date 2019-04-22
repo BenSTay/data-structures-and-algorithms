@@ -11,6 +11,9 @@ Repository for C# Data Structure & Algorithm implementations.
 7. [Breadth First Tree Traversal](./challenges/breadth-first)
 8. [Find Maximum Value in a Binary Tree](./challenges/find-maximum-binary-tree)
 
+### Sorting Algorithms
+1. [Insertion Sort](./sorts/insertion-sort)
+
 ## Completed Data Structure Implementations
 1. [Linked List](./data-structures/linked-list)
 2. [Stack & Queue](./data-structures/stack-and-queue)
