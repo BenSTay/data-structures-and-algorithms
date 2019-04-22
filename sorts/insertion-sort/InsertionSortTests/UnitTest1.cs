@@ -32,5 +32,22 @@ namespace InsertionSortTests
             int[] result = Program.InsertionSort(test);
             Assert.Equal(expected, result);
         }
+
+        [Fact]
+        public void CanSortEmpty()
+        {
+            int[] test = new int[0];
+            int[] result = Program.InsertionSort(test);
+            Assert.Empty(result);
+        }
+
+        [Fact]
+        public void CanSortSingle()
+        {
+            int[] test = new int[] { 1 };
+            int[] expected = new int[] { 1 };
+            int[] result = Program.InsertionSort(test);
+            Assert.Equal(expected, result);
+        }
     }
 }
