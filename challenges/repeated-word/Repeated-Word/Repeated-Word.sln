@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.202
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Repeated-Word", "Repeated-Word\Repeated-Word.csproj", "{3B9C07B6-7538-4CAA-96BD-724A44B54153}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Repeated-Word-Tests", "Repeated-Word-Tests\Repeated-Word-Tests.csproj", "{559CCAC2-1CFB-490E-80F8-F20A0C3DFE5B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3B9C07B6-7538-4CAA-96BD-724A44B54153}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B9C07B6-7538-4CAA-96BD-724A44B54153}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B9C07B6-7538-4CAA-96BD-724A44B54153}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B9C07B6-7538-4CAA-96BD-724A44B54153}.Release|Any CPU.Build.0 = Release|Any CPU
+		{559CCAC2-1CFB-490E-80F8-F20A0C3DFE5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{559CCAC2-1CFB-490E-80F8-F20A0C3DFE5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{559CCAC2-1CFB-490E-80F8-F20A0C3DFE5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{559CCAC2-1CFB-490E-80F8-F20A0C3DFE5B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C70D249C-ED4B-434F-9178-C1EF73C0AF32}
+	EndGlobalSection
+EndGlobal
