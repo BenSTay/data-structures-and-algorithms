@@ -15,7 +15,7 @@ namespace Repeated_Word
         {
             if (input is null) return null;
 
-            // Splits the input string on spaces & punctuation, keeping dashes & hyphens.
+            // Splits the input string on spaces & punctuation, keeping hyphens & apostrophes.
             Regex regex = new Regex(@"(?:(?!['-])\W)+");
             string[] words = regex.Split(input.ToLower());
 
