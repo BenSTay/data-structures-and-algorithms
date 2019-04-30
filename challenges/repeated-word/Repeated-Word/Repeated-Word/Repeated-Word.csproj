@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <RootNamespace>Repeated_Word</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="Hashtables">
+      <HintPath>..\..\..\..\data-structures\hashtables\Hashtables\Hashtables\bin\Debug\netcoreapp2.2\Hashtables.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
