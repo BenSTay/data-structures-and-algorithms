@@ -14,13 +14,17 @@ namespace Left_Join_Tests
             Hashtable<List<string>> right = new Hashtable<List<string>>();
 
             string key = "big";
-            List<string> values = new List<string>();
-            values.Add("huge");
+            List<string> values = new List<string>
+            {
+                "huge"
+            };
             left.Add(key, values);
 
             key = "big";
-            values = new List<string>();
-            values.Add("tiny");
+            values = new List<string>
+            {
+                "tiny"
+            };
             right.Add(key, values);
 
             Program.LeftJoin(left, right);

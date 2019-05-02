@@ -46,8 +46,10 @@ namespace Left_Join
             for (int i = 0; i < leftKeys.Length; i++)
             {
                 string key = leftKeys[i];
-                List<string> values = new List<string>();
-                values.Add(leftValues[i]);
+                List<string> values = new List<string>
+                {
+                    leftValues[i]
+                };
                 left.Add(key, values);
             }
 
@@ -64,8 +66,10 @@ namespace Left_Join
             for (int i = 0; i < rightKeys.Length; i++)
             {
                 string key = rightKeys[i];
-                List<string> values = new List<string>();
-                values.Add(rightValues[i]);
+                List<string> values = new List<string>
+                {
+                    rightValues[i]
+                };
                 right.Add(key, values);
             }
 
