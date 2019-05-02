@@ -1,4 +1,4 @@
-# Left Join
+# Hashtable Left Join
 A C# algorithm challenge implementation.
 
 ## Challenge

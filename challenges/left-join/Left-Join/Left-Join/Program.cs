@@ -1,6 +1,5 @@
-﻿using System;
+﻿using Hashtables.Classes;
 using System.Collections.Generic;
-using Hashtables.Classes;
 
 namespace Left_Join
 {
@@ -70,15 +69,8 @@ namespace Left_Join
                 right.Add(key, values);
             }
 
-            Console.WriteLine("Left Table");
-            left.Print();
-
-            Console.WriteLine("\nRight Table");
-            right.Print();
-
-            Console.WriteLine("\nJoined Table");
-            LeftJoin(left, right).Print();
-
+            // Add a breakpoint here to view the result
+            LeftJoin(left, right);
         }
     }
 }

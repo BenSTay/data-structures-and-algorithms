@@ -12,6 +12,7 @@ Repository for C# Data Structure & Algorithm implementations.
 8. [Find Maximum Value in a Binary Tree](./challenges/find-maximum-binary-tree)
 9. [First Repeated Word](./challenges/repeated-word)
 10. [Tree Intersection](./challenges/tree-intersection)
+11. [Hashtable Left Join](./challenges/left-join)
 
 ### Sorting Algorithms
 1. [Insertion Sort](./sorts/insertion-sort)

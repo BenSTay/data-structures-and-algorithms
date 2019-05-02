@@ -1,8 +1,7 @@
 using Hashtables.Classes;
-using System;
+using Left_Join;
 using System.Collections.Generic;
 using Xunit;
-using Left_Join;
 
 namespace Left_Join_Tests
 {
@@ -28,7 +27,7 @@ namespace Left_Join_Tests
 
             List<string> result = left.Get("big");
             List<string> expected = new List<string>();
-            expected.AddRange(new string[]{"huge", "tiny"});
+            expected.AddRange(new string[] { "huge", "tiny" });
 
             Assert.Equal(expected, result);
         }
