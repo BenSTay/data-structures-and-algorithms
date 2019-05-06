@@ -32,6 +32,11 @@ namespace Graphs.Classes
             Edges.Add(edge);
         }
 
+        /// <summary>
+        /// Checks if a the node is connected to a given node.
+        /// </summary>
+        /// <param name="node">The node being checked.</param>
+        /// <returns>A boolean representing if the nodes are connected.</returns>
         public bool HasConnection(Node<T> node)
         {
             foreach(Edge<T> edge in Edges)
@@ -41,6 +46,10 @@ namespace Graphs.Classes
             return false;
         }
 
+        /// <summary>
+        /// Gets all of the neighboring nodes.
+        /// </summary>
+        /// <returns>A list of nodes.</returns>
         public List<Node<T>> GetNeighbors()
         {
             List<Node<T>> neighbors = new List<Node<T>>();
