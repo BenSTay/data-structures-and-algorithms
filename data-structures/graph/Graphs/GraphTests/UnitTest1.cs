@@ -147,5 +147,67 @@ namespace GraphTests
 
             Assert.Equal(0, graph.Size());
         }
+
+        [Fact]
+        public void CanPerformBreadthFirst()
+        {
+            List<Node<int>> nodes = new List<Node<int>>
+            {
+                new Node<int>(3),
+                new Node<int>(5),
+                new Node<int>(7),
+                new Node<int>(11)
+            };
+
+            Graph<int> graph = new Graph<int>(nodes);
+
+            graph.AddTwoWayEdge(nodes[0], nodes[1]);
+            graph.AddTwoWayEdge(nodes[2], nodes[3]);
+            graph.AddTwoWayEdge(nodes[0], nodes[3]);
+
+            List<Node<int>> result = graph.BreadthFirst(nodes[0]);
+            bool containsAll = true;
+
+            foreach (Node<int> node in nodes)
+            {
+                containsAll = result.Contains(node);
+                if (!containsAll) break;
+            }
+
+            Assert.True(containsAll);
+        }
+
+        [Fact]
+        public void BreadthFirstIgnoresIslands()
+        {
+            List<Node<int>> nodes = new List<Node<int>>
+            {
+                new Node<int>(3),
+                new Node<int>(5),
+                new Node<int>(7),
+                new Node<int>(11)
+            };
+
+            Graph<int> graph = new Graph<int>(nodes);
+
+            graph.AddOneWayEdge(nodes[0], nodes[1]);
+            graph.AddOneWayEdge(nodes[0], nodes[3]);
+
+            List<Node<int>> result = graph.BreadthFirst(nodes[0]);
+
+            Assert.DoesNotContain(nodes[2], result);
+        }
+
+        [Fact]
+        public void BreadthFirstOnEmptyGraphReturnsEmptyList()
+        {
+            Graph<int> graph = new Graph<int>();
+
+            Node<int> node = new Node<int>(2);
+
+            List<Node<int>> result = graph.BreadthFirst(node);
+
+            Assert.Empty(result);
+        }
     }
 }

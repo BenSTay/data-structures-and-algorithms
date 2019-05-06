@@ -116,5 +116,50 @@ namespace Graphs.Classes
         {
             return Nodes.Count;
         }
+
+        /// <summary>
+        /// Performs a breadth-first traversal on the graph.
+        /// </summary>
+        /// <param name="root">The start node of the traversal.</param>
+        /// <returns>A list of nodes.</returns>
+        public List<Node<T>> BreadthFirst(Node<T> root)
+        {
+            // Returns an empty list if graph is empty or does not contain root node.
+            List<Node<T>> result = new List<Node<T>>();
+            if (Nodes.Count < 1 || !Nodes.Contains(root)) return result;
+
+            ResetVisited();
+
+            // Enqueues the root node.
+            Queue<Node<T>> breadth = new Queue<Node<T>>();
+            breadth.Enqueue(root);
+
+            // Performs the traversal.
+            while (breadth.TryDequeue(out Node<T> node))
+            {
+                // Adds the node to the result, marks the node as visited.
+                result.Add(node);
+                node.Visited = true;
+
+                // Adds neighboring nodes to the queue.
+                foreach (Node<T> neighbor in node.GetNeighbors())
+                {
+                    if (!neighbor.Visited) breadth.Enqueue(neighbor);
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Sets all of the graph's nodes 'Visited' flag to false.
+        /// </summary>
+        public void ResetVisited()
+        {
+            foreach (Node<T> node in Nodes)
+            {
+                node.Visited = false;
+            }
+        }
     }
 }
