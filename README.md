@@ -13,6 +13,7 @@ Repository for C# Data Structure & Algorithm implementations.
 9. [First Repeated Word](./challenges/repeated-word)
 10. [Tree Intersection](./challenges/tree-intersection)
 11. [Hashtable Left Join](./challenges/left-join)
+12. [Breadth First Graph Traversal](./challenges/breadth-first-graph)
 
 ### Sorting Algorithms
 1. [Insertion Sort](./sorts/insertion-sort)
