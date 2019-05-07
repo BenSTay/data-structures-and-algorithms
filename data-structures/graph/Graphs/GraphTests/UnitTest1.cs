@@ -11,203 +11,131 @@ namespace GraphTests
         public void CanAddNode()
         {
             Graph<int> graph = new Graph<int>();
-
-            Node<int> node = new Node<int>(10);
-
-            graph.Add(node);
-
-            Assert.Contains(node, graph.GetNodes());
+            graph.AddNode(1);
+            Assert.Contains(1, graph.GetNodes());
         }
 
         [Fact]
         public void CanAddEdge()
         {
             Graph<int> graph = new Graph<int>();
-
-            Node<int> node1 = new Node<int>(10);
-            Node<int> node2 = new Node<int>(25);
-
-            graph.Add(node1);
-            graph.Add(node2);
-
-            graph.AddTwoWayEdge(node1, node2);
-
-            Assert.True(node1.HasConnection(node2));
+            graph.AddNode(1);
+            graph.AddNode(10);
+            graph.AddEdge(1, 10);
+            Assert.Equal(10, graph.GetNeighbors(1)[0].Item1);
         }
 
         [Fact]
-        public void CanGetAllNodes()
+        public void CanGetNodes()
         {
+            List<int> expected = new List<int> { 1, 2, 3, 4, 5 };
             Graph<int> graph = new Graph<int>();
-
-            Node<int> node1 = new Node<int>(10);
-            Node<int> node2 = new Node<int>(25);
-
-            graph.Add(node1);
-            graph.Add(node2);
-
-            List<Node<int>> result = graph.GetNodes();
-
-            Assert.True(result.Contains(node1) && result.Contains(node2));
+            foreach (int i in expected)
+            {
+                graph.AddNode(i);
+            }
+            Assert.Equal(expected, graph.GetNodes());
         }
 
         [Fact]
         public void CanGetNeighbors()
         {
             Graph<int> graph = new Graph<int>();
-
-            Node<int> node1 = new Node<int>(10);
-            Node<int> node2 = new Node<int>(25);
-            Node<int> node3 = new Node<int>(33);
-
-            graph.Add(node1);
-            graph.Add(node2);
-            graph.Add(node3);
-
-            graph.AddOneWayEdge(node1, node2);
-            graph.AddTwoWayEdge(node3, node1);
-
-            List<Edge<int>> result = graph.GetNeighbors(node1);
-            List<Node<int>> neighbors = new List<Node<int>>();
-            foreach (Edge<int> edge in result)
+            for (int i = 1; i < 6; i++)
             {
-                neighbors.Add(edge.Destination);
+                graph.AddNode(i);
             }
-
-            Assert.True(neighbors.Contains(node2) && neighbors.Contains(node3));
-            
+            for (int i = 2; i < 6; i++)
+            {
+                graph.AddEdge(1, i);
+            }
+            Assert.Equal(4, graph.GetNeighbors(1).Count);
         }
 
         [Fact]
-        public void CanGetNeighborsWithWeights()
+        public void CanGetEdgeWeights()
         {
             Graph<int> graph = new Graph<int>();
-
-            Node<int> node1 = new Node<int>(10);
-            Node<int> node2 = new Node<int>(25);
-            Node<int> node3 = new Node<int>(33);
-
-            graph.Add(node1);
-            graph.Add(node2);
-            graph.Add(node3);
-
-            graph.AddOneWayEdge(node1, node2, 2);
-            graph.AddTwoWayEdge(node3, node1, 5);
-
-            List<Edge<int>> result = graph.GetNeighbors(node1);
-            List<Node<int>> neighbors = new List<Node<int>>();
-            List<int> weights = new List<int>();
-            foreach (Edge<int> edge in result)
-            {
-                neighbors.Add(edge.Destination);
-                weights.Add(edge.Weight);
-            }
-
-            Assert.True(neighbors.Contains(node2)
-                && neighbors.Contains(node3)
-                && weights.Contains(2)
-                && weights.Contains(5));
+            graph.AddNode(1);
+            graph.AddNode(10);
+            graph.AddEdge(1, 10, 100);
+            Assert.Equal(100, graph.GetNeighbors(1)[0].Item2);
         }
 
         [Fact]
         public void CanGetSize()
         {
             Graph<int> graph = new Graph<int>();
-
-            Node<int> node1 = new Node<int>(10);
-            Node<int> node2 = new Node<int>(25);
-            Node<int> node3 = new Node<int>(33);
-
-            graph.Add(node1);
-            graph.Add(node2);
-            graph.Add(node3);
-
-            Assert.Equal(3, graph.Size());
+            for (int i = 1; i < 6; i++)
+            {
+                graph.AddNode(i);
+            }
+            Assert.Equal(5, graph.Size());
         }
 
         [Fact]
-        public void NodeCanPointToItself()
+        public void CanAddEdgeWithSameNode()
         {
             Graph<int> graph = new Graph<int>();
-
-            Node<int> node1 = new Node<int>(10);
-
-            graph.Add(node1);
-
-            graph.AddOneWayEdge(node1, node1);
-
-            Assert.True(graph.Size() == 1
-                && graph.GetNeighbors(node1).Count == 1);
+            graph.AddNode(1);
+            graph.AddEdge(1, 1);
+            Assert.Single(graph.GetNeighbors(1));
         }
 
         [Fact]
-        public void EmptyGraphIsEmpty()
+        public void GetNodesReturnsNullIfEmpty()
         {
             Graph<int> graph = new Graph<int>();
-
-            Assert.Equal(0, graph.Size());
+            Assert.Null(graph.GetNodes());
         }
 
         [Fact]
         public void CanPerformBreadthFirst()
         {
-            List<Node<int>> nodes = new List<Node<int>>
+            Graph<int> graph = new Graph<int>();
+            for (int i = 1; i < 8; i++)
             {
-                new Node<int>(3),
-                new Node<int>(5),
-                new Node<int>(7),
-                new Node<int>(11)
-            };
-
-            Graph<int> graph = new Graph<int>(nodes);
-
-            graph.AddTwoWayEdge(nodes[0], nodes[1]);
-            graph.AddTwoWayEdge(nodes[2], nodes[3]);
-            graph.AddTwoWayEdge(nodes[0], nodes[3]);
-
-            List<Node<int>> result = graph.BreadthFirst(nodes[0]);
-            bool containsAll = true;
-
-            foreach (Node<int> node in nodes)
-            {
-                containsAll = result.Contains(node);
-                if (!containsAll) break;
+                graph.AddNode(i);
             }
 
-            Assert.True(containsAll);
+            graph.AddEdge(1, 2);
+            graph.AddEdge(2, 3);
+            graph.AddEdge(1, 4);
+            graph.AddEdge(1, 5);
+            graph.AddEdge(2, 5);
+            graph.AddEdge(5, 6);
+            graph.AddEdge(4, 7);
+            graph.AddEdge(5, 7);
+
+            List<int> expected = new List<int> { 1, 2, 4, 5, 3, 7, 6 };
+            Assert.Equal(expected, graph.BreadthFirst(1));
         }
 
         [Fact]
         public void BreadthFirstIgnoresIslands()
         {
-            List<Node<int>> nodes = new List<Node<int>>
+            Graph<int> graph = new Graph<int>();
+            for (int i = 1; i < 8; i++)
             {
-                new Node<int>(3),
-                new Node<int>(5),
-                new Node<int>(7),
-                new Node<int>(11)
-            };
+                graph.AddNode(i);
+            }
 
-            Graph<int> graph = new Graph<int>(nodes);
+            graph.AddEdge(1, 2);
+            graph.AddEdge(2, 3);
+            graph.AddEdge(1, 5);
+            graph.AddEdge(2, 5);
+            graph.AddEdge(5, 6);
+            graph.AddEdge(5, 7);
 
-            graph.AddOneWayEdge(nodes[0], nodes[1]);
-            graph.AddOneWayEdge(nodes[0], nodes[3]);
-
-            List<Node<int>> result = graph.BreadthFirst(nodes[0]);
-
-            Assert.DoesNotContain(nodes[2], result);
+            List<int> expected = new List<int> { 1, 2, 5, 3, 6, 7 };
+            Assert.Equal(expected, graph.BreadthFirst(1));
         }
 
         [Fact]
-        public void BreadthFirstOnEmptyGraphReturnsEmptyList()
+        public void BreadthFirstOnEmptyGraphReturnsNull()
         {
             Graph<int> graph = new Graph<int>();
-
-            Node<int> node = new Node<int>(2);
-
-            List<Node<int>> result = graph.BreadthFirst(node);
-
-            Assert.Empty(result);
+            Assert.Null(graph.BreadthFirst(1));
         }
     }
 }
