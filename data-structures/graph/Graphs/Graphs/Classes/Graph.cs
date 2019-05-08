@@ -1,165 +1,128 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Graphs.Classes
 {
     public class Graph<T>
     {
-        private List<Node<T>> Nodes { get; set; }
+        readonly Dictionary<T, Dictionary<T, int>> Nodes;
 
         /// <summary>
         /// Creates an empty graph.
         /// </summary>
         public Graph()
         {
-            Nodes = new List<Node<T>>();
-        }
-
-        /// <summary>
-        /// Creates a graph with a single node.
-        /// </summary>
-        /// <param name="node">The node being inserted.</param>
-        public Graph(Node<T> node)
-        {
-            Nodes = new List<Node<T>> { node };
-        }
-
-        /// <summary>
-        /// Creates a graph with a given list of nodes.
-        /// </summary>
-        /// <param name="nodes">The graph's list of nodes.</param>
-        public Graph(List<Node<T>> nodes)
-        {
-            Nodes = nodes;
+            Nodes = new Dictionary<T, Dictionary<T, int>>();
         }
 
         /// <summary>
         /// Adds a node to the graph.
         /// </summary>
-        /// <param name="node">The node being added.</param>
-        public void Add(Node<T> node)
+        /// <param name="value">The node's value.</param>
+        /// <returns>A boolean representing whether the operation was successful.</returns>
+        public bool AddNode(T value)
         {
-            Nodes.Add(node);
+            if (Nodes.ContainsKey(value)) return false;
+
+            Nodes.Add(value, new Dictionary<T, int>());
+            return true;
         }
 
         /// <summary>
-        /// Adds multiple nodes to the graph.
+        /// Connects two nodes in the graph.
         /// </summary>
-        /// <param name="nodes">The list of nodes being added.</param>
-        public void AddRange(List<Node<T>> nodes)
+        /// <param name="v1">The value of the first node being connected.</param>
+        /// <param name="v2">The value of the second node being connected.</param>
+        /// <param name="weight">Sets the weight of the edge (Default: 1)</param>
+        /// <param name="oneWay">Determines if the edge can only be traversed from a single direction (Default: false)</param>
+        /// <returns>A boolean representing if the operation was successful.</returns>
+        public bool AddEdge(T v1, T v2, int weight = 1, bool oneWay = false)
         {
-            Nodes.AddRange(nodes);
-        }
+            if (!Nodes.ContainsKey(v1) || !Nodes.ContainsKey(v2)) return false;
 
-        /// <summary>
-        /// Adds a unidirectional edge to the graph.
-        /// </summary>
-        /// <param name="n1">The start node.</param>
-        /// <param name="n2">The destination node.</param>
-        /// <param name="weight">The edge's weight (default = 1).</param>
-        public void AddOneWayEdge(Node<T> n1, Node<T> n2, int weight = 1)
-        {
-            if (!Nodes.Contains(n1) || !Nodes.Contains(n2)) throw new ArgumentException(
-                "Both nodes must be in the graph!");
+            Dictionary<T, int> n1 = Nodes.GetValueOrDefault(v1);
+            Dictionary<T, int> n2 = Nodes.GetValueOrDefault(v2);
 
-            n1.AddEdge(n2, weight);
-        }
+            if (n1.ContainsKey(v2)) return false;
 
-        /// <summary>
-        /// Adds a bidirectional edge to the graph.
-        /// </summary>
-        /// <param name="n1">The first node.</param>
-        /// <param name="n2">The second node.</param>
-        /// <param name="weight">The edge's weight (default = 1).</param>
-        public void AddTwoWayEdge(Node<T> n1, Node<T> n2, int weight = 1)
-        {
-            if (!Nodes.Contains(n1) || !Nodes.Contains(n2)) throw new ArgumentException(
-                "Both nodes must be in the graph!");
-
-            if (n1 == n2)
+            if (!oneWay && !v1.Equals(v2))
             {
-                AddOneWayEdge(n1, n1, weight);
-                return;
+                if (n2.ContainsKey(v1)) return false;
+                n2.Add(v1, weight);
             }
 
-            n1.AddEdge(n2, weight);
-            n2.AddEdge(n1, weight);
+            n1.Add(v2, weight);
+            return true;
         }
 
         /// <summary>
-        /// Gets all nodes in the graph.
+        /// Gets all of the node values in the graph.
         /// </summary>
-        /// <returns>A list of all nodes in the graph.</returns>
-        public List<Node<T>> GetNodes()
+        /// <returns>A list of node values.</returns>
+        public List<T> GetNodes()
         {
-            return Nodes;
+            if (Nodes.Keys.Count < 1) return null;
+            return Nodes.Keys.ToList();
         }
 
         /// <summary>
-        /// Gets all neighbor nodes for a given node.
+        /// Gets all nodes neighboring a given node.
         /// </summary>
-        /// <param name="node">The node whose neighbors are being found.</param>
-        /// <returns>A list of neighboring nodes.</returns>
-        public List<Edge<T>> GetNeighbors(Node<T> node)
+        /// <param name="value">The value of the node being checked.</param>
+        /// <returns>A dictionary of connected nodes.</returns>
+        public Dictionary<T, int> GetNeighbors(T value)
         {
-            if (!Nodes.Contains(node)) throw new ArgumentException("Node must be in the graph!");
+            if (!Nodes.ContainsKey(value)) return null;
 
-            return node.Edges;
+            return Nodes.GetValueOrDefault(value);
         }
 
         /// <summary>
         /// Gets the number of nodes in the graph.
         /// </summary>
-        /// <returns>The size of the graph as an integer.</returns>
+        /// <returns>An integer representing the size of the graph.</returns>
         public int Size()
         {
-            return Nodes.Count;
+            return Nodes.Keys.Count;
         }
 
         /// <summary>
-        /// Performs a breadth-first traversal on the graph.
+        /// Performs a breadth-first traversal of the graph.
         /// </summary>
-        /// <param name="root">The start node of the traversal.</param>
-        /// <returns>A list of nodes.</returns>
-        public List<Node<T>> BreadthFirst(Node<T> root)
+        /// <param name="value">The value of the root node for the traversal.</param>
+        /// <returns>A list of node values.</returns>
+        public List<T> BreadthFirst(T value)
         {
-            // Returns an empty list if graph is empty or does not contain root node.
-            List<Node<T>> result = new List<Node<T>>();
-            if (Nodes.Count < 1 || !Nodes.Contains(root)) return result;
+            if (!Nodes.ContainsKey(value)) return null;
 
-            ResetVisited();
+            Dictionary<T, bool> visited = new Dictionary<T, bool>();
+            visited.Add(value, true);
 
-            // Enqueues the root node.
-            Queue<Node<T>> breadth = new Queue<Node<T>>();
-            breadth.Enqueue(root);
+            List<T> output = new List<T> { value };
+            Queue<List<T>> breadth = new Queue<List<T>>();
 
-            // Performs the traversal.
-            while (breadth.TryDequeue(out Node<T> node))
+            breadth.Enqueue(
+                Nodes.GetValueOrDefault(value).Keys.ToList()
+            );
+
+            while (breadth.TryDequeue(out List<T> neighbors))
             {
-                // Adds the node to the result, marks the node as visited.
-                result.Add(node);
-                node.Visited = true;
-
-                // Adds neighboring nodes to the queue.
-                foreach (Node<T> neighbor in node.GetNeighbors())
+                foreach (T node in neighbors)
                 {
-                    if (!neighbor.Visited) breadth.Enqueue(neighbor);
+                    if (!visited.ContainsKey(node))
+                    {
+                        visited.Add(node, true);
+                        output.Add(node);
+                        breadth.Enqueue(
+                            Nodes.GetValueOrDefault(node).Keys.ToList()    
+                        );
+                    }
                 }
             }
 
-            return result;
-        }
-
-        /// <summary>
-        /// Sets all of the graph's nodes 'Visited' flag to false.
-        /// </summary>
-        public void ResetVisited()
-        {
-            foreach (Node<T> node in Nodes)
-            {
-                node.Visited = false;
-            }
+            return output;
         }
     }
 }

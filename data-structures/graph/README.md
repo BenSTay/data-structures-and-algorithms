@@ -10,7 +10,7 @@ A graph can be represented in two ways: through an **adjacency matrix**, or an *
 In an adjacency matrix, connections between nodes are represented in a 2-dimensional array, where the value at any given position is the weight of the edge between those two nodes (or zero if no edge exists).
 In an adjacency list, connections between nodes are represented as a list of lists, where each sub-list represents all of the possible traversals from a specific node.
 
-This implementation includes the following methods: **Add**, **AddRange**, **AddOneWayEdge**, **AddTwoWayEdge**, **GetNodes**, **GetNeighbors**, & **Size** 
+This implementation includes the following methods: **Add**, **AddEdge**, **GetNodes**, **GetNeighbors**, **Size**, & **BreadthFirst** 
 
 ### Types of Graphs
 - In a **directed graph**, edges can only be traversed in a single direction (you can get to node B from node A, but you can't get to node A from node B).
@@ -25,10 +25,9 @@ All of these types of graphs can be created in this implementation.
 ## Methods
 | Method | Summary | Big O Time | Big O Space | Example |
 | :----: | :-----: | :--------: | :---------: | :-----: |
-| Add | Adds a node to the graph | O(1) | O(1) | ```graph.Add(node)```
-| AddRange | Adds a range of nodes to the graph | O(n) | O(n) | ```graph.Add(nodeList)```
-| AddOneWayEdge | Creates a 1-way edge between two nodes | O(1) | O(1) | ```graph.AddOneWayEdge(node1, node2)```
-| AddTwoWayEdge | Creates a 2-way edge between two nodes | O(1) | O(1) | ```graph.AddTwoWayEdge(node1, node2)```
-| GetNodes | Gets all nodes in the graph | O(1) | O(1) | ```graph.GetNodes()```
+| AddNode | Adds a node to the graph | O(1) | O(1) | ```graph.Add(node)```
+| AddEdge | Creates an edge between two nodes | O(1) | O(1) | ```graph.AddEdge(node1, node2, weight)```
+| GetNodes | Gets all nodes in the graph | O(1) | O(n) | ```graph.GetNodes()```
 | GetNeighbors | Gets all neighboring nodes of a given node | O(n) | O(n) | ```graph.GetNeighbors(node)```
 | Size | Gets the number of nodes in the graph | O(1) | O(1) | ```graph.Size()```
+| BreadthFirst | Performs a breadth first traversal on the graph from a given starting node | O(n) | O(n) | ```graph.BreadthFirst(node)```

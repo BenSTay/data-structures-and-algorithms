@@ -8,21 +8,25 @@ namespace Graphs
     {
         static void Main(string[] args)
         {
-            List<Node<int>> nodes = new List<Node<int>>
-            {
-                new Node<int>(3),
-                new Node<int>(5),
-                new Node<int>(7),
-                new Node<int>(11)
-            };
+            Graph<int> graph = new Graph<int>();
 
-            Graph<int> graph = new Graph<int>(nodes);
+            graph.AddNode(1);
+            graph.AddNode(2);
+            graph.AddNode(3);
+            graph.AddNode(4);
+            graph.AddNode(5);
 
-            graph.AddTwoWayEdge(nodes[0], nodes[1]);
-            graph.AddTwoWayEdge(nodes[2], nodes[3]);
-            graph.AddTwoWayEdge(nodes[0], nodes[3]);
+            graph.AddEdge(1, 2);
+            graph.AddEdge(1, 3);
+            graph.AddEdge(1, 4);
+            graph.AddEdge(2, 3);
+            graph.AddEdge(2, 5);
+            graph.AddEdge(3, 5);
+            graph.AddEdge(3, 4);
+            graph.AddEdge(4, 5);
 
-            List<Node<int>> result = graph.BreadthFirst(nodes[0]);
+            Console.WriteLine(string.Join(", ", graph.GetNodes()));
+            Console.WriteLine(string.Join(", ", graph.BreadthFirst(2)));
         }
     }
 }
