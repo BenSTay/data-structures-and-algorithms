@@ -19,4 +19,4 @@ Once the last location in the itinerary is reached, the total cost is returned.
   - No matter how large the input graph is or how large the itinerary is, the memory allocated by the algorithm remains constant.
 
 ## Solution
-![Whiteboard](../../getedges.webp)
+![Whiteboard](../../assets/getedges.webp)
