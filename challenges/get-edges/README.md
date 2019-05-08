@@ -11,9 +11,9 @@ Similarly, if the size of the graph is less than 2, return 0 (because you can't 
 
 
 ### Big O
-- **Time**: O()
-  - B
-- **Space**: O()
+- **Time**: O(n)
+  - Because getting
+- **Space**: O(1)
   - B
 
 ## Solution

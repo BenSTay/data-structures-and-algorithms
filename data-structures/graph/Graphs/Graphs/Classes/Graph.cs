@@ -71,20 +71,12 @@ namespace Graphs.Classes
         /// Gets all nodes neighboring a given node.
         /// </summary>
         /// <param name="value">The value of the node being checked.</param>
-        /// <returns>A list of node values and edge weights.</returns>
-        public List<(T, int)> GetNeighbors(T value)
+        /// <returns>A dictionary of connected nodes.</returns>
+        public Dictionary<T, int> GetNeighbors(T value)
         {
             if (!Nodes.ContainsKey(value)) return null;
 
-            Dictionary<T, int> node = Nodes.GetValueOrDefault(value);
-            List<(T, int)> neighbors = new List<(T, int)>();
-
-            foreach (T key in node.Keys)
-            {
-                neighbors.Add((key, node.GetValueOrDefault(key)));
-            }
-
-            return neighbors;
+            return Nodes.GetValueOrDefault(value);
         }
 
         /// <summary>

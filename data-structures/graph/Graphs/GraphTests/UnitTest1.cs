@@ -22,7 +22,7 @@ namespace GraphTests
             graph.AddNode(1);
             graph.AddNode(10);
             graph.AddEdge(1, 10);
-            Assert.Equal(10, graph.GetNeighbors(1)[0].Item1);
+            Assert.True(graph.GetNeighbors(1).ContainsKey(10));
         }
 
         [Fact]
@@ -59,7 +59,7 @@ namespace GraphTests
             graph.AddNode(1);
             graph.AddNode(10);
             graph.AddEdge(1, 10, 100);
-            Assert.Equal(100, graph.GetNeighbors(1)[0].Item2);
+            Assert.Equal(100, graph.GetNeighbors(1).GetValueOrDefault(10));
         }
 
         [Fact]
