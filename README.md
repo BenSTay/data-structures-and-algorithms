@@ -15,7 +15,7 @@ Repository for C# Data Structure & Algorithm implementations.
 11. [Hashtable Left Join](./challenges/left-join)
 12. [Breadth First Graph Traversal](./challenges/breadth-first-graph)
 13. [Get Edges](./challenges/get-edges)
-14. [Depth First Graph Traversal](.challenges/depth-first)
+14. [Depth First Graph Traversal](./challenges/depth-first)
 
 ### Sorting Algorithms
 1. [Insertion Sort](./sorts/insertion-sort)
