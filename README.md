@@ -16,6 +16,7 @@ Repository for C# Data Structure & Algorithm implementations.
 12. [Breadth First Graph Traversal](./challenges/breadth-first-graph)
 13. [Get Edges](./challenges/get-edges)
 14. [Depth First Graph Traversal](./challenges/depth-first)
+15. [All Balanced Parentheses Combiniations](./challenges/all-balanced-parentheses)
 
 ### Sorting Algorithms
 1. [Insertion Sort](./sorts/insertion-sort)
