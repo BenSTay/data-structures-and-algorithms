@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.452
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Find-Tree-Depth", "Find-Tree-Depth\Find-Tree-Depth.csproj", "{2003C368-84ED-4AB8-9A5A-1EE120B57AC8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FindTreeDepthTests", "FindTreeDepthTests\FindTreeDepthTests.csproj", "{6B496818-173D-4AEE-A9AB-2DB669DE3716}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2003C368-84ED-4AB8-9A5A-1EE120B57AC8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2003C368-84ED-4AB8-9A5A-1EE120B57AC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2003C368-84ED-4AB8-9A5A-1EE120B57AC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2003C368-84ED-4AB8-9A5A-1EE120B57AC8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B496818-173D-4AEE-A9AB-2DB669DE3716}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B496818-173D-4AEE-A9AB-2DB669DE3716}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B496818-173D-4AEE-A9AB-2DB669DE3716}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B496818-173D-4AEE-A9AB-2DB669DE3716}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CD97A519-9289-40F0-8937-049094BD6762}
+	EndGlobalSection
+EndGlobal
