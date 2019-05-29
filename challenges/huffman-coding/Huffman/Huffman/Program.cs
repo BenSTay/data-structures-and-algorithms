@@ -7,8 +7,8 @@ namespace Huffman
     {
         static void Main(string[] args)
         {
-            FileReader.GetChars($"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}/shakespeare-hamlet-25.txt");
-            Console.WriteLine("Hello World!");
+            char[] chars = FileReader.GetChars($"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}/shakespeare-hamlet-25.txt");
+            Tree tree = new Tree(chars);
         }
     }
 }
