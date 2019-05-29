@@ -8,16 +8,22 @@ namespace Huffman.Classes
     public class FileReader
     {
 
-        public static char[] GetChars(string file)
+        public static Dictionary<char, uint> GetChars(string file)
         {
-            string fileText;
+            Dictionary<char, uint> charCounts = new Dictionary<char, uint>();
 
             using (StreamReader reader = new StreamReader(file))
             {
-                fileText = reader.ReadToEnd();
+                while (!reader.EndOfStream)
+                {
+                    char c = (char)reader.Read();
+
+                    if (charCounts.ContainsKey(c)) charCounts[c]++;
+                    else charCounts.Add(c, 1);
+                }
             }
 
-            return fileText.ToCharArray();
+            return charCounts;
         }
     }
 }
