@@ -196,7 +196,7 @@ namespace Huffman.Classes
             {
                 while (bits.TryDequeue(out bool bit))
                 {
-                    if (bit) current = current.Left;
+                    if (!bit) current = current.Left;
                     else current = current.Right;
 
                     if (current.Char != (char)0)
