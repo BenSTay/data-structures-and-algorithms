@@ -8,26 +8,21 @@ using System.Text;
 namespace Huffman.Classes
 {
     public class Tree
-    { 
+    {
+        private const char Separator = (char)27;
         public Node Root { get; set; }
         public string Text { get; set; }
+        public string Path { get; set; }
 
         public Tree(string path)
         {
+            Path = path;
             Text = File.ReadAllText(path);
-
-            Dictionary<char, uint> charCounts = new Dictionary<char, uint>();
-
-            foreach (char c in Text)
-            {
-                if (charCounts.ContainsKey(c)) charCounts[c]++;
-                else charCounts.Add(c, 1);
-            }
-
-            Root = Build(SortChars(charCounts));
         }
 
-        private static Dictionary<uint, Queue<Node>> SortChars(Dictionary<char, uint> charCounts)
+        // Compression Methods
+
+        private Dictionary<uint, Queue<Node>> MakeNodes(Dictionary<char, uint> charCounts)
         {
             Dictionary<uint, Queue<Node>> nodeValues = new Dictionary<uint, Queue<Node>>();
 
@@ -41,7 +36,7 @@ namespace Huffman.Classes
             return nodeValues;
         }
 
-        private static Node Build(Dictionary<uint, Queue<Node>> nodeValues)
+        private void BuildTree(Dictionary<uint, Queue<Node>> nodeValues)
         {
             List<uint> values = nodeValues.Keys.ToList();
             values.Sort();
@@ -81,7 +76,7 @@ namespace Huffman.Classes
                 }
             }
 
-            return nodeValues[values[0]].Dequeue();
+            Root = nodeValues[values[0]].Dequeue();
         }
 
         private Dictionary<char, bool[]> GetCharBits()
@@ -101,36 +96,32 @@ namespace Huffman.Classes
             }
         }
 
-        public void Compress(string path)
+        public void Compress()
         {
+            // Construct Huffman Tree
+            Dictionary<char, uint> charCounts = new Dictionary<char, uint>();
+
+            foreach (char c in Text)
+            {
+                if (charCounts.ContainsKey(c)) charCounts[c]++;
+                else charCounts.Add(c, 1);
+            }
+
+            Dictionary<uint, Queue<Node>> nodeValues = MakeNodes(charCounts);
+            BuildTree(nodeValues);
+
             Dictionary<char, bool[]> charBits = GetCharBits();
+            bool[] test = charBits['\r'];
+            Queue<bool> bitQueue = GetBitQueue(charBits);
+
+            string newPath = $"{Path}c";
+            WriteHeader(charBits, newPath, bitQueue.Count % 8);
+            WriteCompressedBody(newPath, bitQueue);
+        }
+
+        private Queue<bool> GetBitQueue(Dictionary<char, bool[]> charBits)
+        {
             Queue<bool> bitQueue = new Queue<bool>();
-
-            foreach (char c in charBits.Keys)
-            {
-                foreach (byte b in Encoding.UTF32.GetBytes($"{c}"))
-                {
-                    for (int i = 7; i >= 0; i--)
-                    {
-                        bitQueue.Enqueue(!((b & (1 << i)) == 0));
-                    }
-                }
-
-                foreach (bool bit in charBits[c])
-                {
-                    bitQueue.Enqueue(bit);
-                }   
-
-                for ( int i = 0; i < 32; i++)
-                {
-                    bitQueue.Enqueue(false);
-                }
-            }
-
-            for (int i = 0; i < 32; i++)
-            {
-                bitQueue.Enqueue(false);
-            }
 
             foreach (char c in Text)
             {
@@ -140,12 +131,35 @@ namespace Huffman.Classes
                 }
             }
 
-            for (int i = 0; i < 32; i++)
-            {
-                bitQueue.Enqueue(false);
-            }
+            return bitQueue;
+        }
 
-            using (FileStream fs = File.Create(path))
+        private void WriteHeader(Dictionary<char, bool[]> charBits, string path, int remainder)
+        {
+            using (StreamWriter sw = File.CreateText(path))
+            {
+                // Writes the # of bits to ignore at the end of the file
+                if (remainder == 0) sw.Write($"0{Separator}");
+                else sw.Write($"{8 - remainder}{Separator}");
+
+                // Writes the huffman table
+                foreach (char c in charBits.Keys)
+                {
+                    sw.Write($"{c}{Separator}");
+                    foreach (bool bit in charBits[c])
+                    {
+                        if (bit) sw.Write(1);
+                        else sw.Write(0);
+                    }
+                    sw.Write(Separator);
+                }
+                sw.Write(Separator);
+            }
+        }
+        
+        private void WriteCompressedBody(string path, Queue<bool> bitQueue)
+        {
+            using (FileStream fs = File.Open(path, FileMode.Append))
             {
                 while (bitQueue.Count > 0)
                 {
@@ -155,15 +169,107 @@ namespace Huffman.Classes
                     {
                         if (bitQueue.TryDequeue(out bool bit))
                         {
-                           if (bit) b |= (byte)(1 << (7 - i));
+                            if (bit) b |= (byte)(1 << (7 - i));
                         }
                         else break;
                     }
 
                     fs.WriteByte(b);
                 }
-   
             }
+        }
+
+        // Decompression Methods
+
+        public void Decompress()
+        {
+            string[] split = Text.Split(Separator);
+            int ignoredBits = int.Parse(split[0]);
+
+            int startIndex = BuildTree(split);
+            Queue<bool> bits = GetBits(split, startIndex, ignoredBits);
+
+            string newPath = $"{Path.Substring(0, Path.Length - 4)}decompressed.txt";
+            Node current = Root;
+
+            using (StreamWriter sw = File.CreateText(newPath))
+            {
+                while (bits.TryDequeue(out bool bit))
+                {
+                    if (bit) current = current.Left;
+                    else current = current.Right;
+
+                    if (current.Char != (char)0)
+                    {
+                        sw.Write(current.Char);
+                        current = Root;
+                    }
+                }
+            }
+        }
+
+        private int BuildTree(string[] split)
+        {
+            Root = new Node();
+            Node current;
+            int i;
+
+            for (i = 1; i < split.Length; i += 2)
+            {
+                if (string.IsNullOrEmpty(split[i])) break;
+
+                char c = split[i].ToCharArray()[0];
+                string bits = split[i+ 1];
+
+                current = Root;
+
+                for (int j = 0; j < bits.Length; j++)
+                {
+                    if (bits[j] == '0')
+                    {
+                        if (current.Left is null) current.Left = new Node();
+                        current = current.Left;
+                    }
+                    else
+                    {
+                        if (current.Right is null) current.Right = new Node();
+                        current = current.Right;
+                    }
+                }
+
+                current.Char = c;
+            }
+
+            return i + 1;
+        }
+
+        private Queue<bool> GetBits(string[] split, int startIndex, int ignoredBits)
+        {
+            int i;
+            StringBuilder builder = new StringBuilder();
+            for (i = 0; i < startIndex; i++)
+            {
+                builder.Append(split[i]);
+            }
+
+            byte[] bytes = File.ReadAllBytes(Path);
+            int headerBytes = Encoding.UTF8.GetByteCount(builder.ToString());
+            Queue<bool> bits = new Queue<bool>();
+
+            for (i = headerBytes + startIndex; i < bytes.Length - 1; i++)
+            {
+                for (int j = 7; j >= 0; j--)
+                {
+                    bits.Enqueue(!((bytes[i] & (1 << j)) == 0));
+                }
+            }
+
+            for (int j = 7; j >= ignoredBits; j--)
+            {
+                bits.Enqueue(!((bytes[i] & (1 << j)) == 0));
+            }
+
+            return bits;
         }
     }
 }

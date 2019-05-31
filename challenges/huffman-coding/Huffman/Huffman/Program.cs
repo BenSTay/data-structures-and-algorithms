@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Huffman.Classes;
 using System.IO;
+using System.Text;
 
 namespace Huffman
 {
@@ -13,7 +14,11 @@ namespace Huffman
 
             Tree tree = new Tree(filePath);
 
-            tree.Compress($"{filePath}c");
+            tree.Compress();
+
+            Tree tree2 = new Tree($"{filePath}c");
+
+            tree2.Decompress();
         }
     }
 }

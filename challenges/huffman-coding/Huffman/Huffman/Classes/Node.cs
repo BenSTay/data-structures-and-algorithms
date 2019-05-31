@@ -24,5 +24,6 @@ namespace Huffman.Classes
             Count = left.Count + right.Count;
         }
 
+        public Node() { }
     }
 }
