@@ -22,6 +22,11 @@ namespace Huffman.Classes
 
         // Compression Methods
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="charCounts"></param>
+        /// <returns></returns>
         private Dictionary<uint, Queue<Node>> MakeNodes(Dictionary<char, uint> charCounts)
         {
             Dictionary<uint, Queue<Node>> nodeValues = new Dictionary<uint, Queue<Node>>();
@@ -36,6 +41,10 @@ namespace Huffman.Classes
             return nodeValues;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="nodeValues"></param>
         private void BuildTree(Dictionary<uint, Queue<Node>> nodeValues)
         {
             List<uint> values = nodeValues.Keys.ToList();
@@ -79,6 +88,10 @@ namespace Huffman.Classes
             Root = nodeValues[values[0]].Dequeue();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         private Dictionary<char, bool[]> GetCharBits()
         {
             Dictionary<char, bool[]> charBits = new Dictionary<char, bool[]>();
@@ -86,6 +99,12 @@ namespace Huffman.Classes
             return charBits;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="charBits"></param>
+        /// <param name="node"></param>
+        /// <param name="bits"></param>
         private void GetCharBits(Dictionary<char, bool[]> charBits, Node node, bool[] bits)
         {
             if (node.Char != 0) charBits.Add(node.Char, bits);
@@ -96,6 +115,9 @@ namespace Huffman.Classes
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public void Compress()
         {
             // Construct Huffman Tree
@@ -119,6 +141,11 @@ namespace Huffman.Classes
             WriteCompressedBody(newPath, bitQueue);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="charBits"></param>
+        /// <returns></returns>
         private Queue<bool> GetBitQueue(Dictionary<char, bool[]> charBits)
         {
             Queue<bool> bitQueue = new Queue<bool>();
@@ -134,6 +161,12 @@ namespace Huffman.Classes
             return bitQueue;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="charBits"></param>
+        /// <param name="path"></param>
+        /// <param name="remainder"></param>
         private void WriteHeader(Dictionary<char, bool[]> charBits, string path, int remainder)
         {
             using (StreamWriter sw = File.CreateText(path))
@@ -153,10 +186,15 @@ namespace Huffman.Classes
                     }
                     sw.Write(Separator);
                 }
-                sw.Write(Separator);
+                sw.Write('\0');
             }
         }
         
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="bitQueue"></param>
         private void WriteCompressedBody(string path, Queue<bool> bitQueue)
         {
             using (FileStream fs = File.Open(path, FileMode.Append))
@@ -181,19 +219,21 @@ namespace Huffman.Classes
 
         // Decompression Methods
 
+        /// <summary>
+        /// Decompresses a compressed text file.
+        /// </summary>
         public void Decompress()
         {
-            string[] split = Text.Split(Separator);
-            int ignoredBits = int.Parse(split[0]);
+            ParseHeader();
+            Queue<bool> bits = ParseBody();
 
-            int startIndex = BuildTree(split);
-            Queue<bool> bits = GetBits(split, startIndex, ignoredBits);
-
-            string newPath = $"{Path.Substring(0, Path.Length - 4)}decompressed.txt";
+            string newPath = $"{Path.Substring(0, Path.Length - 5)}-decompressed.txt";
             Node current = Root;
 
             using (StreamWriter sw = File.CreateText(newPath))
             {
+                // Traverses the Huffman tree bit by bit, printing the char held
+                // in each leaf node to the decompressed file.
                 while (bits.TryDequeue(out bool bit))
                 {
                     if (!bit) current = current.Left;
@@ -208,21 +248,27 @@ namespace Huffman.Classes
             }
         }
 
-        private int BuildTree(string[] split)
+        /// <summary>
+        /// Re-constructs the Huffman tree using the compressed file's header.
+        /// </summary>
+        private void ParseHeader()
         {
             Root = new Node();
-            Node current;
-            int i;
 
-            for (i = 1; i < split.Length; i += 2)
+            // Gets the file's header and splits it on the default separator.
+            string header = Text.Substring(0, Text.IndexOf('\0'));
+            string[] split = header.Split(Separator);
+            
+            // Iterates through header, ignoring the first line.
+            for (int i = 1; i < split.Length - 1; i++)
             {
-                if (string.IsNullOrEmpty(split[i])) break;
+                char c = split[i++][0];
+                string bits = split[i];
 
-                char c = split[i].ToCharArray()[0];
-                string bits = split[i+ 1];
+                Node current = Root;
 
-                current = Root;
-
+                // Adds the node containing char c to the tree at the position
+                // specifified by its associated binary code.
                 for (int j = 0; j < bits.Length; j++)
                 {
                     if (bits[j] == '0')
@@ -236,27 +282,25 @@ namespace Huffman.Classes
                         current = current.Right;
                     }
                 }
-
                 current.Char = c;
             }
-
-            return i + 1;
         }
 
-        private Queue<bool> GetBits(string[] split, int startIndex, int ignoredBits)
+        /// <summary>
+        /// Parses the body of a compressed text file.
+        /// </summary>
+        /// <returns>A Queue of bits (represented as booleans)</returns>
+        private Queue<bool> ParseBody()
         {
-            int i;
-            StringBuilder builder = new StringBuilder();
-            for (i = 0; i < startIndex; i++)
-            {
-                builder.Append(split[i]);
-            }
+            // Gets the number of bytes taken by the header.
+            string header = Text.Substring(0, Text.IndexOf('\0'));
+            int headerBytes = Encoding.UTF8.GetByteCount(header);
 
             byte[] bytes = File.ReadAllBytes(Path);
-            int headerBytes = Encoding.UTF8.GetByteCount(builder.ToString());
             Queue<bool> bits = new Queue<bool>();
 
-            for (i = headerBytes + startIndex; i < bytes.Length - 1; i++)
+            // Parses all bytes after the header, ignoring the last byte.
+            for (int i = headerBytes; i < bytes.Length - 1; i++)
             {
                 for (int j = 7; j >= 0; j--)
                 {
@@ -264,9 +308,11 @@ namespace Huffman.Classes
                 }
             }
 
+            // Parses the last byte, ignoring trailing zeroes.
+            int ignoredBits = int.Parse(Text.First().ToString());
             for (int j = 7; j >= ignoredBits; j--)
             {
-                bits.Enqueue(!((bytes[i] & (1 << j)) == 0));
+                bits.Enqueue(!((bytes[bytes.Length - 1] & (1 << j)) == 0));
             }
 
             return bits;
