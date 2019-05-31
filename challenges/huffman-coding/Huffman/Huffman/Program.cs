@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Huffman.Classes;
+using System.IO;
 
 namespace Huffman
 {
@@ -8,8 +9,11 @@ namespace Huffman
     {
         static void Main(string[] args)
         {
-            Dictionary<char, uint> charCounts = FileReader.GetChars($"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}/shakespeare-hamlet-25.txt");
-            Tree tree = new Tree(charCounts);
+            string filePath = "../../../../../shakespeare.txt";
+
+            Tree tree = new Tree(filePath);
+
+            tree.Compress($"{filePath}c");
         }
     }
 }

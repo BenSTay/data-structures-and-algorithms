@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -8,9 +10,20 @@ namespace Huffman.Classes
     public class Tree
     { 
         public Node Root { get; set; }
+        public string Text { get; set; }
 
-        public Tree(Dictionary<char, uint> charCounts)
+        public Tree(string path)
         {
+            Text = File.ReadAllText(path);
+
+            Dictionary<char, uint> charCounts = new Dictionary<char, uint>();
+
+            foreach (char c in Text)
+            {
+                if (charCounts.ContainsKey(c)) charCounts[c]++;
+                else charCounts.Add(c, 1);
+            }
+
             Root = Build(SortChars(charCounts));
         }
 
@@ -69,6 +82,88 @@ namespace Huffman.Classes
             }
 
             return nodeValues[values[0]].Dequeue();
+        }
+
+        private Dictionary<char, bool[]> GetCharBits()
+        {
+            Dictionary<char, bool[]> charBits = new Dictionary<char, bool[]>();
+            GetCharBits(charBits, Root, new bool[0]);
+            return charBits;
+        }
+
+        private void GetCharBits(Dictionary<char, bool[]> charBits, Node node, bool[] bits)
+        {
+            if (node.Char != 0) charBits.Add(node.Char, bits);
+            else
+            {
+                GetCharBits(charBits, node.Left, bits.Append(false).ToArray());
+                GetCharBits(charBits, node.Right, bits.Append(true).ToArray());
+            }
+        }
+
+        public void Compress(string path)
+        {
+            Dictionary<char, bool[]> charBits = GetCharBits();
+            Queue<bool> bitQueue = new Queue<bool>();
+
+            foreach (char c in charBits.Keys)
+            {
+                foreach (byte b in Encoding.UTF32.GetBytes($"{c}"))
+                {
+                    for (int i = 7; i >= 0; i--)
+                    {
+                        bitQueue.Enqueue(!((b & (1 << i)) == 0));
+                    }
+                }
+
+                foreach (bool bit in charBits[c])
+                {
+                    bitQueue.Enqueue(bit);
+                }   
+
+                for ( int i = 0; i < 32; i++)
+                {
+                    bitQueue.Enqueue(false);
+                }
+            }
+
+            for (int i = 0; i < 32; i++)
+            {
+                bitQueue.Enqueue(false);
+            }
+
+            foreach (char c in Text)
+            {
+                foreach (bool bit in charBits[c])
+                {
+                    bitQueue.Enqueue(bit);
+                }
+            }
+
+            for (int i = 0; i < 32; i++)
+            {
+                bitQueue.Enqueue(false);
+            }
+
+            using (FileStream fs = File.Create(path))
+            {
+                while (bitQueue.Count > 0)
+                {
+                    byte b = 0;
+
+                    for (int i = 0; i < 8; i++)
+                    {
+                        if (bitQueue.TryDequeue(out bool bit))
+                        {
+                           if (bit) b |= (byte)(1 << (7 - i));
+                        }
+                        else break;
+                    }
+
+                    fs.WriteByte(b);
+                }
+   
+            }
         }
     }
 }
