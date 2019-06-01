@@ -14,11 +14,13 @@ namespace Huffman
 
             Tree tree = new Tree(filePath);
 
-            tree.Compress();
+            string compressedFilePath = $"{filePath.Substring(0, filePath.Length - 4)}-compressed.txt";
 
-            Tree tree2 = new Tree($"{filePath}c");
+            tree.Compress(compressedFilePath);
 
-            tree2.Decompress();
+            Tree tree2 = new Tree(compressedFilePath);
+
+            tree2.Decompress($"{filePath.Substring(0,filePath.Length - 4)}-decompressed.txt");
         }
     }
 }

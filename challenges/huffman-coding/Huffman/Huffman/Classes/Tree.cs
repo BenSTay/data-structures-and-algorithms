@@ -11,30 +11,43 @@ namespace Huffman.Classes
     {
         private const char Separator = (char)27;
         public Node Root { get; set; }
+        public Dictionary<char, Node> Nodes { get; set; }
         public string Text { get; set; }
         public string Path { get; set; }
 
+        /// <summary>
+        /// Constructs a new Tree using the given input file. 
+        /// </summary>
+        /// <param name="path">The input file's location.</param>
         public Tree(string path)
         {
             Path = path;
             Text = File.ReadAllText(path);
+            Nodes = new Dictionary<char, Node>();
         }
 
         // Compression Methods
 
         /// <summary>
-        /// 
+        /// Uses Huffman Coding to compress a text file at the given path.
         /// </summary>
-        public void Compress()
+        /// <param name="path">The compressed file's destination.</param>
+        public void Compress(string path)
         {
             BuildTree();
 
-            Dictionary<char, bool[]> charBits = GetCharBits();
-            Queue<bool> bitQueue = GetBitQueue(charBits);
+            Queue<bool> bitQueue = new Queue<bool>();
 
-            string newPath = $"{Path}c";
-            WriteHeader(charBits, newPath, bitQueue.Count % 8);
-            WriteCompressedBody(newPath, bitQueue);
+            foreach (char c in Text)
+            {
+                foreach (bool bit in Nodes[c].Bits)
+                {
+                    bitQueue.Enqueue(bit);
+                }
+            }
+
+            WriteHeader(path, bitQueue.Count % 8);
+            WriteCompressedBody(path, bitQueue);
         }
 
         /// <summary>
@@ -50,10 +63,16 @@ namespace Huffman.Classes
             Node left = null;
             uint value = values[0];
 
+            
             while (nodes[value].First().Count < Text.Length)
             {
+                // Dequeues the node with the lowest count from the queue
                 Node node = nodes[value].Dequeue();
+
                 if (left is null) left = node;
+
+                // Once two nodes have been dequeued, they are added as children to a
+                // new parent node, which has the sum of its children's counts as its count.
                 else
                 {
                     Node parent = new Node(left, node);
@@ -61,6 +80,7 @@ namespace Huffman.Classes
 
                     uint count = parent.Count;
 
+                    // The parent node is inserted back into the "priority queue".
                     if (nodes.ContainsKey(count)) nodes[count].Enqueue(parent);
                     else
                     {
@@ -74,6 +94,7 @@ namespace Huffman.Classes
                     }
                 }
 
+                // Once a "sub-queue" has been emptied, it is removed.
                 if (nodes[value].Count == 0)
                 {
                     nodes.Remove(value);
@@ -83,16 +104,18 @@ namespace Huffman.Classes
             }
 
             Root = nodes[value].Dequeue();
+            GetCharBits(Root, new bool[0]);
         }
 
         /// <summary>
-        /// 
+        /// Creates the leaf nodes of the Huffman Tree and places them into a "priority queue".
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The "priority queue" (represented as a dictionary of queues)</returns>
         private Dictionary<uint, Queue<Node>> MakeNodes()
         {
             Dictionary<char, uint> charCounts = new Dictionary<char, uint>();
 
+            // Counts the number of occurrances for each char in the input text.
             foreach (char c in Text)
             {
                 if (charCounts.ContainsKey(c)) charCounts[c]++;
@@ -101,6 +124,8 @@ namespace Huffman.Classes
 
             Dictionary<uint, Queue<Node>> nodeValues = new Dictionary<uint, Queue<Node>>();
 
+            // Creates nodes using each char and its associated count, and places them into a 
+            // "priority queue"
             foreach (char c in charCounts.Keys)
             {
                 uint count = charCounts[c];
@@ -108,65 +133,33 @@ namespace Huffman.Classes
 
                 Node node = new Node(count, c);
                 nodeValues[count].Enqueue(node);
+                Nodes.Add(c, node);
             }
 
             return nodeValues;
         }
 
         /// <summary>
-        /// 
+        /// Recursively assigns each leaf node the binary sequence required to navigate to it from the root.
         /// </summary>
-        /// <returns></returns>
-        private Dictionary<char, bool[]> GetCharBits()
+        /// <param name="node">The node being accessed.</param>
+        /// <param name="bits">The binary sequence.</param>
+        private void GetCharBits(Node node, bool[] bits)
         {
-            Dictionary<char, bool[]> charBits = new Dictionary<char, bool[]>();
-            GetCharBits(charBits, Root, new bool[0]);
-            return charBits;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="charBits"></param>
-        /// <param name="node"></param>
-        /// <param name="bits"></param>
-        private void GetCharBits(Dictionary<char, bool[]> charBits, Node node, bool[] bits)
-        {
-            if (node.Char != 0) charBits.Add(node.Char, bits);
+            if (node.Char != 0) node.Bits = bits;
             else
             {
-                GetCharBits(charBits, node.Left, bits.Append(false).ToArray());
-                GetCharBits(charBits, node.Right, bits.Append(true).ToArray());
+                GetCharBits(node.Left, bits.Append(false).ToArray());
+                GetCharBits(node.Right, bits.Append(true).ToArray());
             }
         }
 
         /// <summary>
-        /// 
+        /// Writes the Huffman table to the output file so that the tree can be reconstructed during decompression.
         /// </summary>
-        /// <param name="charBits"></param>
-        /// <returns></returns>
-        private Queue<bool> GetBitQueue(Dictionary<char, bool[]> charBits)
-        {
-            Queue<bool> bitQueue = new Queue<bool>();
-
-            foreach (char c in Text)
-            {
-                foreach (bool bit in charBits[c])
-                {
-                    bitQueue.Enqueue(bit);
-                }
-            }
-
-            return bitQueue;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="charBits"></param>
-        /// <param name="path"></param>
-        /// <param name="remainder"></param>
-        private void WriteHeader(Dictionary<char, bool[]> charBits, string path, int remainder)
+        /// <param name="path">The compressed file's path.</param>
+        /// <param name="remainder">The number of trailing bits to ignore.</param>
+        private void WriteHeader(string path, int remainder)
         {
             using (StreamWriter sw = File.CreateText(path))
             {
@@ -175,10 +168,10 @@ namespace Huffman.Classes
                 else sw.Write($"{8 - remainder}{Separator}");
 
                 // Writes the huffman table
-                foreach (char c in charBits.Keys)
+                foreach (char c in Nodes.Keys)
                 {
                     sw.Write($"{c}{Separator}");
-                    foreach (bool bit in charBits[c])
+                    foreach (bool bit in Nodes[c].Bits)
                     {
                         if (bit) sw.Write(1);
                         else sw.Write(0);
@@ -190,10 +183,10 @@ namespace Huffman.Classes
         }
         
         /// <summary>
-        /// 
+        /// Writes all chars in the original file to the new file using their Huffman codes.
         /// </summary>
-        /// <param name="path"></param>
-        /// <param name="bitQueue"></param>
+        /// <param name="path">The new file's path.</param>
+        /// <param name="bitQueue">The queue of bits to be written to the file.</param>
         private void WriteCompressedBody(string path, Queue<bool> bitQueue)
         {
             using (FileStream fs = File.Open(path, FileMode.Append))
@@ -202,6 +195,8 @@ namespace Huffman.Classes
                 {
                     byte b = 0;
 
+                    // Dequeues 8 bits from the queue at a time to create bytes which can be
+                    // written to the new file.
                     for (int i = 0; i < 8; i++)
                     {
                         if (bitQueue.TryDequeue(out bool bit))
@@ -221,15 +216,15 @@ namespace Huffman.Classes
         /// <summary>
         /// Decompresses a compressed text file.
         /// </summary>
-        public void Decompress()
+        /// <param name="path">The decompressed file's destination.</param>
+        public void Decompress(string path)
         {
             ParseHeader();
             Queue<bool> bits = ParseBody();
 
-            string newPath = $"{Path.Substring(0, Path.Length - 5)}-decompressed.txt";
             Node current = Root;
 
-            using (StreamWriter sw = File.CreateText(newPath))
+            using (StreamWriter sw = File.CreateText(path))
             {
                 // Traverses the Huffman tree bit by bit, printing the char held
                 // in each leaf node to the decompressed file.
