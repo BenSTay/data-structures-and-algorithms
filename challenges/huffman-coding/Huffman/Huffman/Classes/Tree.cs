@@ -25,67 +25,92 @@ namespace Huffman.Classes
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="charCounts"></param>
-        /// <returns></returns>
-        private Dictionary<uint, Queue<Node>> MakeNodes(Dictionary<char, uint> charCounts)
+        public void Compress()
         {
+            BuildTree();
+
+            Dictionary<char, bool[]> charBits = GetCharBits();
+            Queue<bool> bitQueue = GetBitQueue(charBits);
+
+            string newPath = $"{Path}c";
+            WriteHeader(charBits, newPath, bitQueue.Count % 8);
+            WriteCompressedBody(newPath, bitQueue);
+        }
+
+        /// <summary>
+        /// Constructs a Huffman tree using the file's text.
+        /// </summary>
+        private void BuildTree()
+        {
+            Dictionary<uint, Queue<Node>> nodes = MakeNodes();
+
+            List<uint> values = nodes.Keys.ToList();
+            values.Sort();
+
+            Node left = null;
+            uint value = values[0];
+
+            while (nodes[value].First().Count < Text.Length)
+            {
+                Node node = nodes[value].Dequeue();
+                if (left is null) left = node;
+                else
+                {
+                    Node parent = new Node(left, node);
+                    left = null;
+
+                    uint count = parent.Count;
+
+                    if (nodes.ContainsKey(count)) nodes[count].Enqueue(parent);
+                    else
+                    {
+                        if (values.Count == 0 || count > values.Last()) values.Add(count);
+                        else values.Insert(values.FindIndex(v => v > count), count);
+
+                        Queue<Node> queue = new Queue<Node>();
+                        queue.Enqueue(parent);
+
+                        nodes.Add(count, queue);
+                    }
+                }
+
+                if (nodes[value].Count == 0)
+                {
+                    nodes.Remove(value);
+                    values.RemoveAt(0);
+                    value = values[0];
+                }
+            }
+
+            Root = nodes[value].Dequeue();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        private Dictionary<uint, Queue<Node>> MakeNodes()
+        {
+            Dictionary<char, uint> charCounts = new Dictionary<char, uint>();
+
+            foreach (char c in Text)
+            {
+                if (charCounts.ContainsKey(c)) charCounts[c]++;
+                else charCounts.Add(c, 1);
+            }
+
             Dictionary<uint, Queue<Node>> nodeValues = new Dictionary<uint, Queue<Node>>();
 
             foreach (char c in charCounts.Keys)
             {
                 uint count = charCounts[c];
                 if (!nodeValues.ContainsKey(count)) nodeValues.Add(count, new Queue<Node>());
-                nodeValues[count].Enqueue(new Node(count, c));
+
+                Node node = new Node(count, c);
+                nodeValues[count].Enqueue(node);
             }
 
             return nodeValues;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="nodeValues"></param>
-        private void BuildTree(Dictionary<uint, Queue<Node>> nodeValues)
-        {
-            List<uint> values = nodeValues.Keys.ToList();
-            values.Sort();
-            
-            while (values.Count > 1 || nodeValues[values[0]].Count > 1)
-            {
-                Node left, right, parent;
-
-                left = nodeValues[values[0]].Dequeue();
-
-                if (nodeValues[values[0]].TryDequeue(out Node n2)) right = n2;
-                else
-                {
-                    nodeValues.Remove(values[0]);
-                    values.RemoveAt(0);
-                    right = nodeValues[values[0]].Dequeue();
-                }
-
-                if (nodeValues[values[0]].Count == 0)
-                {
-                    nodeValues.Remove(values[0]);
-                    values.RemoveAt(0);
-                }
-
-                parent = new Node(left, right);
-
-                if (nodeValues.ContainsKey(parent.Count)) nodeValues[parent.Count].Enqueue(parent);
-                else
-                {
-                    if (values.Count == 0 || parent.Count > values.Last()) values.Add(parent.Count);
-                    else values.Insert(values.FindIndex(v => v > parent.Count), parent.Count);
-
-                    Queue<Node> queue = new Queue<Node>();
-                    queue.Enqueue(parent);
-
-                    nodeValues.Add(parent.Count, queue);
-                }
-            }
-
-            Root = nodeValues[values[0]].Dequeue();
         }
 
         /// <summary>
@@ -113,32 +138,6 @@ namespace Huffman.Classes
                 GetCharBits(charBits, node.Left, bits.Append(false).ToArray());
                 GetCharBits(charBits, node.Right, bits.Append(true).ToArray());
             }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public void Compress()
-        {
-            // Construct Huffman Tree
-            Dictionary<char, uint> charCounts = new Dictionary<char, uint>();
-
-            foreach (char c in Text)
-            {
-                if (charCounts.ContainsKey(c)) charCounts[c]++;
-                else charCounts.Add(c, 1);
-            }
-
-            Dictionary<uint, Queue<Node>> nodeValues = MakeNodes(charCounts);
-            BuildTree(nodeValues);
-
-            Dictionary<char, bool[]> charBits = GetCharBits();
-            bool[] test = charBits['\r'];
-            Queue<bool> bitQueue = GetBitQueue(charBits);
-
-            string newPath = $"{Path}c";
-            WriteHeader(charBits, newPath, bitQueue.Count % 8);
-            WriteCompressedBody(newPath, bitQueue);
         }
 
         /// <summary>
