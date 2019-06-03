@@ -95,24 +95,35 @@ namespace Huffman.Classes
 
         public void Compress()
         {
+            if (Compressed) throw new InvalidOperationException("Cannot compress compressed file");
+
             int pathLength = _document.Path.Length - _document.Name.Length - _document.Ext.Length;
             string path = $"{_document.Path.Substring(0, pathLength)}{_document.Name}-compressed{_document.Ext}";
             Queue<bool> bitQueue = new Queue<bool>();
 
-            foreach (byte b in _document.Bytes)
+            using (FileStream stream = File.Open(_document.Path, FileMode.Open))
             {
-                foreach (bool bit in Nodes[b].Bits)
+                while (stream.Position < stream.Length)
                 {
-                    bitQueue.Enqueue(bit);
+                    byte b = (byte)stream.ReadByte();
+                    for (int i = 0; i < Nodes[b].Bits.Length; i++)
+                    {
+                        bitQueue.Enqueue(Nodes[b].Bits[i]);
+                    }
                 }
             }
 
             WriteHeader(path, (byte)(bitQueue.Count % 8));
+            int length = bitQueue.Count;
+
 
             using (FileStream fs = File.Open(path, FileMode.Append))
             {
                 while (bitQueue.Count > 0)
                 {
+                    Console.Clear();
+                    Console.WriteLine($"Writing: {100 - (100 * bitQueue.Count)/length}%");
+
                     byte b = 0;
 
                     // Dequeues 8 bits from the queue at a time to create bytes which can be
@@ -164,43 +175,56 @@ namespace Huffman.Classes
 
         public void Decompress()
         {
+            if (!Compressed) throw new InvalidOperationException("Cannot decompressed uncompressed file.");
+
             int pathLength = _document.Path.Length - _document.Name.Length - _document.Ext.Length;
             string path = $"{_document.Path.Substring(0, pathLength)}{_document.Name}-decompressed{_document.Ext}";
             Node current = Root;
 
-            using (FileStream fs = File.Create(path))
+            FileStream readStream = File.Open(_document.Path, FileMode.Open);
+            FileStream writeStream = File.Create(path);
+
+            readStream.Position = Header.EndPosition;
+
+            byte b;
+
+            while (readStream.Position < readStream.Length - 1)
             {
-                for (ulong i = Header.Length; i < (ulong)_document.Bytes.Length - 1; i++)
+                b = (byte)readStream.ReadByte();
+
+                for (int i = 0; i < 8; i++)
                 {
-                    for (int j = 0; j < 8; j++)
-                    {
-                        if (current.Left is null)
-                        {
-                            fs.WriteByte(current.Byte);
-                            current = Root;
-                        }
-
-                        if ((_document.Bytes[i] & (1 << (7 - j))) == 0)
-                            current = current.Left;
-
-                        else current = current.Right;
-                    }
-                }
-
-                for (int i = 0; i < 8 - Header.TrailingBits; i++)
-                {
-                    if ((_document.Bytes[_document.Bytes.Length - 1] & (1 << (7 - i))) == 0)
+                    if ((b & (1 << (7 - i))) == 0)
                         current = current.Left;
 
                     else current = current.Right;
 
                     if (current.Left is null)
                     {
-                        fs.WriteByte(current.Byte);
+                        writeStream.WriteByte(current.Byte);
                         current = Root;
                     }
                 }
             }
+
+            b = (byte)readStream.ReadByte();
+            readStream.Dispose();
+
+            for (int i = 0; i < 8 - Header.TrailingBits; i++)
+            {
+                if ((b & (1 << (7 - i))) == 0)
+                    current = current.Left;
+
+                else current = current.Right;
+
+                if (current.Left is null)
+                {
+                    writeStream.WriteByte(current.Byte);
+                    current = Root;
+                }
+            }
+
+            writeStream.Dispose();
         }
     }
 }

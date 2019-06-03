@@ -8,7 +8,7 @@ namespace Huffman.Classes
     {
         public byte TrailingBits { get; set; }
         public Dictionary<byte, bool[]>  HuffmanTable { get; set; }
-        public ulong Length { get; set; }
+        public long EndPosition { get; set; }
 
         public HeaderInfo()
         {
