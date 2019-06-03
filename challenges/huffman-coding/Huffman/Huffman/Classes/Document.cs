@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace Huffman.Classes
 {
@@ -61,12 +62,22 @@ namespace Huffman.Classes
             using (FileStream stream = File.Open(Path, FileMode.Open))
             {
                 header.TrailingBits = (byte)stream.ReadByte();
+
+                // Header is only valid if the first byte is less than 8.
                 if (header.TrailingBits > 7) header.IsValid = false;
 
                 while (header.IsValid)
                 {
                     byte b = (byte)stream.ReadByte();
-                    if (header.HuffmanTable.ContainsKey(b)) break;
+                    if (header.HuffmanTable.ContainsKey(b))
+                    {
+                        // Header is only valid if the first repeated key byte is
+                        // equal to the last key byte.
+                        if (b != header.HuffmanTable.Keys.Last())
+                            header.IsValid = false;
+
+                        break;
+                    }
 
                     byte bitCount = (byte)stream.ReadByte();
 
@@ -87,6 +98,8 @@ namespace Huffman.Classes
 
                             else
                             {
+                                // Header is only valid if the trailing bits of each
+                                // encoded byte are all zeroes.
                                 if ((next & (1 << (7 - i))) != 0)
                                 {
                                     header.IsValid = false;
