@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace Huffman.Classes.Text
+namespace Huffman.Classes
 {
     class Tree
     {
@@ -11,14 +11,13 @@ namespace Huffman.Classes.Text
         private Node Root { get; set; }
         private Dictionary<byte, Node> Nodes { get; set; }
         private HeaderInfo Header { get; set; }
-        readonly bool Compressed;
 
-        public Tree(Document document, bool compressed)
+        public Tree(Document document)
         {
             _document = document;
-            Compressed = compressed;
+            Header = _document.ParseHeader();
 
-            if (!Compressed)
+            if (!Header.IsValid)
             {
                 Root = Build(_document);
                 Nodes = new Dictionary<byte, Node>();
@@ -27,7 +26,6 @@ namespace Huffman.Classes.Text
 
             else
             {
-                Header = _document.ParseHeader();
                 Root = new Node();
                 Build(Root, Header);
             }
@@ -92,7 +90,7 @@ namespace Huffman.Classes.Text
 
         public void Compress()
         {
-            if (Compressed) throw new InvalidOperationException("Cannot compress compressed file");
+            if (Header.IsValid) throw new InvalidOperationException("Cannot compress compressed file");
 
             int pathLength = _document.Path.Length - _document.Name.Length - _document.Ext.Length;
             string path = $"{_document.Path.Substring(0, pathLength)}{_document.Name}-compressed{_document.Ext}";
@@ -196,7 +194,7 @@ namespace Huffman.Classes.Text
 
         public void Decompress()
         {
-            if (!Compressed) throw new InvalidOperationException("Cannot decompressed uncompressed file.");
+            if (!Header.IsValid) throw new InvalidOperationException("Cannot decompressed uncompressed file.");
 
             int pathLength = _document.Path.Length - _document.Name.Length - _document.Ext.Length;
             string path = $"{_document.Path.Substring(0, pathLength)}{_document.Name}-decompressed{_document.Ext}";

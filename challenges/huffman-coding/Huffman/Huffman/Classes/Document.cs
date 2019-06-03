@@ -61,13 +61,15 @@ namespace Huffman.Classes
             using (FileStream stream = File.Open(Path, FileMode.Open))
             {
                 header.TrailingBits = (byte)stream.ReadByte();
+                if (header.TrailingBits > 7) header.IsValid = false;
 
-                while (true)
+                while (header.IsValid)
                 {
                     byte b = (byte)stream.ReadByte();
                     if (header.HuffmanTable.ContainsKey(b)) break;
 
                     byte bitCount = (byte)stream.ReadByte();
+
                     bool[] bits = new bool[bitCount];
 
                     while (bitCount > 0)
@@ -75,11 +77,22 @@ namespace Huffman.Classes
                         byte next = (byte)stream.ReadByte();
                         for (int i = 0; i < 8; i++)
                         {
-                            bits[bits.Length - bitCount] =
-                                (next & (1 << (7 - i))) != 0;
+                            if (bitCount > 0)
+                            {
+                                bits[bits.Length - bitCount] = 
+                                    (next & (1 << (7 - i))) != 0;
 
-                            bitCount--;
-                            if (bitCount == 0) break;
+                                bitCount--;
+                            }
+
+                            else
+                            {
+                                if ((next & (1 << (7 - i))) != 0)
+                                {
+                                    header.IsValid = false;
+                                    break;
+                                }
+                            }
                         }
                     }
 
