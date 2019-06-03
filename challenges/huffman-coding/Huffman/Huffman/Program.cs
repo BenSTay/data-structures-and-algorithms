@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Huffman.Classes;
-using System.IO;
 using System.Text;
 
 namespace Huffman
@@ -10,17 +9,14 @@ namespace Huffman
     {
         static void Main(string[] args)
         {
-            string filePath = "../../../../../shakespeare.txt";
+            Document doc = new Document("../../../../../shakespeare.txt");
 
-            Tree tree = new Tree(filePath);
+            Tree tree = new Tree(doc, false);
+            tree.Compress();
 
-            string compressedFilePath = $"{filePath.Substring(0, filePath.Length - 4)}-compressed.txt";
-
-            tree.Compress(compressedFilePath);
-
-            Tree tree2 = new Tree(compressedFilePath);
-
-            tree2.Decompress($"{filePath.Substring(0,filePath.Length - 4)}-decompressed.txt");
+            Document doc2 = new Document("../../../../../shakespeare-compressed.txt");
+            Tree tree2 = new Tree(doc2, true);
+            tree2.Decompress();
         }
     }
 }

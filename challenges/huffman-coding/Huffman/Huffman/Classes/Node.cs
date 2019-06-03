@@ -4,30 +4,21 @@ using System.Text;
 
 namespace Huffman.Classes
 {
-    public class Node
+    class Node
     {
-        public uint Count { get; set; }
-        public char Char { get; set; }
+        public byte Byte { get; set; }
+        public ulong Count { get; set; }
+        public bool[] Bits { get; set; }
         public Node Left { get; set; }
         public Node Right { get; set; }
-        public bool[] Bits { get; set; }
 
-        /// <summary>
-        /// Constructs a leaf node.
-        /// </summary>
-        /// <param name="count">The number of times the node's char appears in the input text.</param>
-        /// <param name="chr">A char from the input text.</param>
-        public Node(uint count, char chr)
+
+        public Node(byte b, ulong count)
         {
+            Byte = b;
             Count = count;
-            Char = chr;
         }
 
-        /// <summary>
-        /// Constructs a parent node (with no Char).
-        /// </summary>
-        /// <param name="left">The node's left child.</param>
-        /// <param name="right">The node's right child.</param>
         public Node(Node left, Node right)
         {
             Left = left;
@@ -35,9 +26,9 @@ namespace Huffman.Classes
             Count = left.Count + right.Count;
         }
 
-        /// <summary>
-        /// Default Node constructor.
-        /// </summary>
-        public Node() { }
+        public Node()
+        {
+
+        }
     }
 }
