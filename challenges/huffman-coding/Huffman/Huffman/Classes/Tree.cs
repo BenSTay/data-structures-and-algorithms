@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
+using System.Linq;
 
-namespace Huffman.Classes
+namespace Huffman.Classes.Text
 {
     class Tree
     {
@@ -98,69 +97,65 @@ namespace Huffman.Classes
             int pathLength = _document.Path.Length - _document.Name.Length - _document.Ext.Length;
             string path = $"{_document.Path.Substring(0, pathLength)}{_document.Name}-compressed{_document.Ext}";
             string temp = $"{path.Substring(0, path.Length - _document.Ext.Length)}.temp";
-            int megabyte = 1048576;
 
-            byte bits = 0;
-            int pos = 7;
-            List<byte> bytes = new List<byte>();
+            byte currentByte = 0;
+            int bitPosition = 7;
+
+            List<byte> encoded = new List<byte>();
+            byte[] bytes;
 
             BinaryWriter writer = new BinaryWriter(File.Create(temp));
 
             using (BinaryReader reader = new BinaryReader(File.Open(_document.Path, FileMode.Open)))
             {
                 long totalbits = reader.BaseStream.Length;
-                
-                while (reader.BaseStream.Position < totalbits - megabyte)
+
+                while (reader.BaseStream.Position < totalbits - Document.Mibibyte)
                 {
-                    foreach (byte b in reader.ReadBytes(megabyte))
-                    {
-                        for (int i = 0; i < Nodes[b].Bits.Length; i++)
-                        {
-                            if (Nodes[b].Bits[i])
-                                bits |= (byte)(1 << pos);
-                            pos--;
+                    bytes = reader.ReadBytes(Document.Mibibyte);
+                    (currentByte, bitPosition) = Encode(currentByte, bitPosition, bytes, encoded);
 
-                            if (pos < 0)
-                            {
-                                pos = 7;
-                                bytes.Add(bits);
-                                bits = 0;
-                            }
-                        }
-                    }
-
-                    if (bytes.Count >= megabyte)
+                    if (encoded.Count >= Document.Mibibyte)
                     {
-                        writer.Write(bytes.ToArray());
-                        bytes.Clear();
+                        writer.Write(encoded.ToArray());
+                        encoded.Clear();
                     }
                 }
 
-                foreach (byte b in reader.ReadBytes((int)(totalbits % megabyte)))
-                {
-                    for (int i = 0; i < Nodes[b].Bits.Length; i++)
-                    {
-                        if (Nodes[b].Bits[i])
-                            bits |= (byte)(1 << pos);
-                        pos--;
+                bytes = reader.ReadBytes((int)(totalbits % Document.Mibibyte));
+                (currentByte, bitPosition) = Encode(currentByte, bitPosition, bytes, encoded);
 
-                        if (pos < 0)
-                        {
-                            pos = 7;
-                            bytes.Add(bits);
-                            bits = 0;
-                        }
-                    }
-                }
+                if (bitPosition != 7) encoded.Add(currentByte);
 
-                if (pos != 7) bytes.Add(bits);
-
-                writer.Write(bytes.ToArray());
-                bytes.Clear();
+                writer.Write(encoded.ToArray());
+                encoded.Clear();
             }
 
             writer.Dispose();
-            WriteHeader(path, temp, (byte)((pos + 1) % 8));
+            WriteHeader(path, temp, (byte)((bitPosition + 1) % 8));
+        }
+
+        private (byte, int) Encode(byte currentByte, int bitPosition, byte[] bytes, List<byte> encoded)
+        {
+            foreach (byte b in bytes)
+            {
+                for (int i = 0; i < Nodes[b].Bits.Length; i++)
+                {
+                    if (Nodes[b].Bits[i])
+                        currentByte |= (byte)(1 << bitPosition);
+
+                    bitPosition--;
+
+                    if (bitPosition < 0)
+                    {
+                        bitPosition = 7;
+                        encoded.Add(currentByte);
+                        currentByte = 0;
+                    }
+                }
+            }
+
+            return (currentByte, bitPosition);
         }
 
         private void WriteHeader(string path, string temp, byte trailingBits)
@@ -207,17 +202,55 @@ namespace Huffman.Classes
             string path = $"{_document.Path.Substring(0, pathLength)}{_document.Name}-decompressed{_document.Ext}";
             Node current = Root;
 
-            FileStream readStream = File.Open(_document.Path, FileMode.Open);
-            FileStream writeStream = File.Create(path);
+            List<byte> decoded = new List<byte>();
+            byte[] encoded;
 
-            readStream.Position = Header.EndPosition;
+            BinaryWriter writer = new BinaryWriter(File.Create(path));
 
-            byte b;
-
-            while (readStream.Position < readStream.Length - 1)
+            using (BinaryReader reader = new BinaryReader(File.Open(_document.Path, FileMode.Open)))
             {
-                b = (byte)readStream.ReadByte();
+                long totalBytes = reader.BaseStream.Length;
+                reader.BaseStream.Position = Header.EndPosition;
 
+                while (reader.BaseStream.Position < totalBytes - Document.Mibibyte)
+                {
+                    encoded = reader.ReadBytes(Document.Mibibyte);
+                    current = Decode(encoded, decoded, current);
+
+                    if (decoded.Count >= Document.Mibibyte)
+                    {
+                        writer.Write(decoded.ToArray());
+                        decoded.Clear();
+                    }
+                }
+
+                encoded = reader.ReadBytes((int)((totalBytes - Header.EndPosition) % Document.Mibibyte) - 1);
+                current = Decode(encoded, decoded, current);
+
+                byte last = reader.ReadByte();
+
+                for (int i = 0; i < (8 - Header.TrailingBits); i++)
+                {
+                    if ((last & (1 << (7 - i))) == 0)
+                        current = current.Left;
+
+                    else current = current.Right;
+
+                    if (current.Left is null)
+                    {
+                        decoded.Add(current.Byte);
+                        current = Root;
+                    }
+                }
+            }
+
+            writer.Write(decoded.ToArray());
+        }
+
+        private Node Decode(byte[] encoded, List<byte> decoded, Node current)
+        {
+            foreach (byte b in encoded)
+            {
                 for (int i = 0; i < 8; i++)
                 {
                     if ((b & (1 << (7 - i))) == 0)
@@ -227,30 +260,12 @@ namespace Huffman.Classes
 
                     if (current.Left is null)
                     {
-                        writeStream.WriteByte(current.Byte);
+                        decoded.Add(current.Byte);
                         current = Root;
                     }
                 }
             }
-
-            b = (byte)readStream.ReadByte();
-            readStream.Dispose();
-
-            for (int i = 0; i < 8 - Header.TrailingBits; i++)
-            {
-                if ((b & (1 << (7 - i))) == 0)
-                    current = current.Left;
-
-                else current = current.Right;
-
-                if (current.Left is null)
-                {
-                    writeStream.WriteByte(current.Byte);
-                    current = Root;
-                }
-            }
-
-            writeStream.Dispose();
+            return current;
         }
     }
 }

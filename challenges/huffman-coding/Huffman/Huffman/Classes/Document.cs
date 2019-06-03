@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.IO;
 
 namespace Huffman.Classes
@@ -11,6 +9,8 @@ namespace Huffman.Classes
         public string Name { get; set; }
         public string Ext { get; set; }
 
+        public const int Mibibyte = 1048576;
+
         public Document(string path)
         {
             if (!File.Exists(path))
@@ -20,22 +20,20 @@ namespace Huffman.Classes
             Ext = path.Substring(path.LastIndexOf('.'));
             Name = path.Substring(path.LastIndexOf('/') + 1);
             Name = Name.Substring(0, Name.Length - Ext.Length);
-
         }
 
         public Dictionary<byte, ulong> GetByteCounts()
         {
-            Dictionary<byte, ulong> byteCounts = 
+            Dictionary<byte, ulong> byteCounts =
                 new Dictionary<byte, ulong>();
 
             using (BinaryReader reader = new BinaryReader(File.Open(Path, FileMode.Open)))
             {
                 long totalbits = reader.BaseStream.Length;
-                int megabyte = 1048576;
 
-                while (reader.BaseStream.Position < totalbits - megabyte)
+                while (reader.BaseStream.Position < totalbits - Mibibyte)
                 {
-                    foreach(byte b in reader.ReadBytes(megabyte))
+                    foreach (byte b in reader.ReadBytes(Mibibyte))
                     {
                         if (byteCounts.ContainsKey(b))
                             byteCounts[b]++;
@@ -44,7 +42,7 @@ namespace Huffman.Classes
                     }
                 }
 
-                foreach(byte b in reader.ReadBytes((int)(totalbits % megabyte)))
+                foreach (byte b in reader.ReadBytes((int)(totalbits % Mibibyte)))
                 {
                     if (byteCounts.ContainsKey(b))
                         byteCounts[b]++;

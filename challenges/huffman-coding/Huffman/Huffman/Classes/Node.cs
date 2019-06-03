@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Huffman.Classes
+﻿namespace Huffman.Classes
 {
     class Node
     {
@@ -26,9 +22,6 @@ namespace Huffman.Classes
             Count = left.Count + right.Count;
         }
 
-        public Node()
-        {
-
-        }
+        public Node() { }
     }
 }
