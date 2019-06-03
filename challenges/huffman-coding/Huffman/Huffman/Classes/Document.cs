@@ -28,16 +28,24 @@ namespace Huffman.Classes
             Dictionary<byte, ulong> byteCounts = 
                 new Dictionary<byte, ulong>();
 
-            using (FileStream stream = File.Open(Path, FileMode.Open))
+            using (BinaryReader reader = new BinaryReader(File.Open(Path, FileMode.Open)))
             {
-                while (stream.Position < stream.Length)
+                long totalbits = reader.BaseStream.Length;
+                int megabyte = 1048576;
+
+                while (reader.BaseStream.Position < totalbits - megabyte)
                 {
-                    Console.Clear();
-                    Console.WriteLine($"Reading: {(100* stream.Position) / stream.Length}%");
+                    foreach(byte b in reader.ReadBytes(megabyte))
+                    {
+                        if (byteCounts.ContainsKey(b))
+                            byteCounts[b]++;
 
-                    Console.WriteLine(stream.Position);
-                    byte b = (byte)stream.ReadByte();
+                        else byteCounts.Add(b, 1);
+                    }
+                }
 
+                foreach(byte b in reader.ReadBytes((int)(totalbits % megabyte)))
+                {
                     if (byteCounts.ContainsKey(b))
                         byteCounts[b]++;
 

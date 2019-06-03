@@ -45,8 +45,6 @@ namespace Huffman.Classes
                 PQ.Enqueue(node);
             }
 
-            
-
             return PQ.Dequeue();
         }
 
@@ -99,51 +97,75 @@ namespace Huffman.Classes
 
             int pathLength = _document.Path.Length - _document.Name.Length - _document.Ext.Length;
             string path = $"{_document.Path.Substring(0, pathLength)}{_document.Name}-compressed{_document.Ext}";
-            Queue<bool> bitQueue = new Queue<bool>();
+            string temp = $"{path.Substring(0, path.Length - _document.Ext.Length)}.temp";
+            int megabyte = 1048576;
 
-            using (FileStream stream = File.Open(_document.Path, FileMode.Open))
+            byte bits = 0;
+            int pos = 7;
+            List<byte> bytes = new List<byte>();
+
+            BinaryWriter writer = new BinaryWriter(File.Create(temp));
+
+            using (BinaryReader reader = new BinaryReader(File.Open(_document.Path, FileMode.Open)))
             {
-                while (stream.Position < stream.Length)
+                long totalbits = reader.BaseStream.Length;
+                
+                while (reader.BaseStream.Position < totalbits - megabyte)
                 {
-                    byte b = (byte)stream.ReadByte();
+                    foreach (byte b in reader.ReadBytes(megabyte))
+                    {
+                        for (int i = 0; i < Nodes[b].Bits.Length; i++)
+                        {
+                            if (Nodes[b].Bits[i])
+                                bits |= (byte)(1 << pos);
+                            pos--;
+
+                            if (pos < 0)
+                            {
+                                pos = 7;
+                                bytes.Add(bits);
+                                bits = 0;
+                            }
+                        }
+                    }
+
+                    if (bytes.Count >= megabyte)
+                    {
+                        writer.Write(bytes.ToArray());
+                        bytes.Clear();
+                    }
+                }
+
+                foreach (byte b in reader.ReadBytes((int)(totalbits % megabyte)))
+                {
                     for (int i = 0; i < Nodes[b].Bits.Length; i++)
                     {
-                        bitQueue.Enqueue(Nodes[b].Bits[i]);
-                    }
-                }
-            }
+                        if (Nodes[b].Bits[i])
+                            bits |= (byte)(1 << pos);
+                        pos--;
 
-            WriteHeader(path, (byte)(bitQueue.Count % 8));
-            int length = bitQueue.Count;
-
-
-            using (FileStream fs = File.Open(path, FileMode.Append))
-            {
-                while (bitQueue.Count > 0)
-                {
-                    Console.Clear();
-                    Console.WriteLine($"Writing: {100 - (100 * bitQueue.Count)/length}%");
-
-                    byte b = 0;
-
-                    // Dequeues 8 bits from the queue at a time to create bytes which can be
-                    // written to the new file.
-                    for (int i = 0; i < 8; i++)
-                    {
-                        if (bitQueue.TryDequeue(out bool bit))
+                        if (pos < 0)
                         {
-                            if (bit) b |= (byte)(1 << (7 - i));
+                            pos = 7;
+                            bytes.Add(bits);
+                            bits = 0;
                         }
-                        else break;
                     }
-
-                    fs.WriteByte(b);
                 }
+
+                if (pos != 7) bytes.Add(bits);
+
+                writer.Write(bytes.ToArray());
+                bytes.Clear();
             }
+
+            writer.Dispose();
+            WriteHeader(path, temp, (byte)((pos + 1) % 8));
         }
 
-        private void WriteHeader(string path, byte trailingBits)
+        private void WriteHeader(string path, string temp, byte trailingBits)
         {
+            FileStream tempStream = File.Open(temp, FileMode.Open);
             using (FileStream stream = File.Create(path))
             {
                 stream.WriteByte(trailingBits);
@@ -170,6 +192,10 @@ namespace Huffman.Classes
                     }
                 }
                 stream.WriteByte(Nodes.Keys.Last());
+
+                tempStream.CopyTo(stream);
+                tempStream.Dispose();
+                File.Delete(temp);
             }
         }
 
