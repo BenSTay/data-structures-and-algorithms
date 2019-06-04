@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace Huffman.Classes
 {
@@ -264,6 +265,53 @@ namespace Huffman.Classes
                 }
             }
             return current;
+        }
+
+        public void GenerateUML()
+        {
+            StringBuilder UMLBuilder = new StringBuilder();
+
+            UMLBuilder.AppendLine("@startuml");
+
+            if (Root.Left.Left != null)
+            {
+                UMLBuilder.AppendLine("( ) -down-> (0)");
+                GenerateUML(UMLBuilder, "0", Root.Left);
+            }
+            else UMLBuilder.AppendLine($"( ) -down-> (\"{Root.Left.Byte}\")");
+
+            if (Root.Right.Left != null)
+            {
+                UMLBuilder.AppendLine("( ) -down-> (1)");
+                GenerateUML(UMLBuilder, "1", Root.Right);
+            }
+            else UMLBuilder.AppendLine($"( ) -down-> (\"{Root.Right.Byte}\")");
+
+            UMLBuilder.AppendLine("@enduml");
+
+            _document.Path.Substring(0, _document.Path.Length - _document.Ext.Length);
+
+            File.WriteAllText(
+                $"{_document.Path.Substring(0, _document.Path.Length - _document.Ext.Length)}.puml",
+                    UMLBuilder.ToString()
+                ); 
+        }
+
+        private void GenerateUML(StringBuilder UMLBuilder, string binary, Node current)
+        {
+            if (current.Left.Left != null)
+            {
+                UMLBuilder.AppendLine($"({binary}) -down-> ({binary}0)");
+                GenerateUML(UMLBuilder, $"{binary}0", current.Left);
+            }
+            else UMLBuilder.AppendLine($"({binary}) -down-> (\"{current.Left.Byte}\")");
+
+            if (current.Right.Left != null)
+            {
+                UMLBuilder.AppendLine($"({binary}) -down-> ({binary}1)");
+                GenerateUML(UMLBuilder, $"{binary}1", current.Right);
+            }
+            else UMLBuilder.AppendLine($"({binary}) -down-> (\"{current.Right.Byte}\")");
         }
     }
 }
