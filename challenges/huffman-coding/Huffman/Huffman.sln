@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28922.388
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huffman", "Huffman\Huffman.csproj", "{937C80CA-CB02-4A53-B9FF-D15155EF3A2C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HuffmanTests", "HuffmanTests\HuffmanTests.csproj", "{545B4BD3-4611-4A85-BE49-B773474180D9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{937C80CA-CB02-4A53-B9FF-D15155EF3A2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{937C80CA-CB02-4A53-B9FF-D15155EF3A2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{937C80CA-CB02-4A53-B9FF-D15155EF3A2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{937C80CA-CB02-4A53-B9FF-D15155EF3A2C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{545B4BD3-4611-4A85-BE49-B773474180D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{545B4BD3-4611-4A85-BE49-B773474180D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{545B4BD3-4611-4A85-BE49-B773474180D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{545B4BD3-4611-4A85-BE49-B773474180D9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F1BBE91E-2E12-462F-A12A-62E0E0428353}
+	EndGlobalSection
+EndGlobal
